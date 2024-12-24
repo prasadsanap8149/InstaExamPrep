@@ -24,7 +24,6 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
   List<QuestionsList> localizedQuestions = [];
   Map<String, List<Options>> languageOptions = {}; // Map to store options per language
 
-
   void initializeMultipleChoiceOptions(String language) {
     languageOptions[language] = [
       Options(option: '', isCorrect: false),
