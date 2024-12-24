@@ -15,7 +15,7 @@ import '../helper/helper_functions.dart';
 import '../models/response.dart';
 import '../widgets/app_bar.dart';
 import '../widgets/custom_button.dart';
-import 'home.dart';
+import 'category_home.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});

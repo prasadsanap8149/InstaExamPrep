@@ -40,6 +40,8 @@ dependencies:
   shared_preferences: ^2.2.3 #share data within widgets
   encrypt: ^5.0.1 #Encryption Decryption
   connectivity_plus: ^5.0.2 #Check the online offline device status
+  random_string: ^2.0.1 #generate random strings
+  provider: ^6.1.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

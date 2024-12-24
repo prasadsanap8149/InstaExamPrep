@@ -3,7 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:smartexamprep/database/firebase_service.dart';
 import 'package:smartexamprep/helper/local_storage.dart';
 import 'package:smartexamprep/models/user_profile.dart';
+import 'package:smartexamprep/screens/create_quiz.dart';
 import 'package:smartexamprep/screens/profile_screen.dart';
+import 'package:smartexamprep/screens/quiz_home.dart';
 import 'package:smartexamprep/screens/signin.dart';
 
 import '../helper/constants.dart';
@@ -41,11 +43,9 @@ class _HomeState extends State<Home> {
     debugPrint("Refreshed User Profile: ${updatedProfile.toString()}");
 
     setState(() {
-      if (updatedProfile != null) {
-        userProfile = updatedProfile; // Assign the updated profile
-        selectedTopicsList =
-            userProfile.selectedTopics.toList(); // Update the topic list
-      }
+      userProfile = updatedProfile; // Assign the updated profile
+      selectedTopicsList =
+          userProfile.selectedTopics.toList(); // Update the topic list
     });
   }
 
@@ -293,7 +293,8 @@ class _HomeState extends State<Home> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    color: isActive ? Colors.greenAccent : Colors.green.shade100,
+                    color:
+                        isActive ? Colors.greenAccent : Colors.green.shade100,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -311,16 +312,24 @@ class _HomeState extends State<Home> {
                             onPressed: () async {
                               //Add here to navigate quiz the selected quiz home
                               debugPrint("Navigate quiz click: $topic");
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          QuizHome(quizTitle: topic,userProfile:widget.userProfile)));
+                              // Navigator.push(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //         builder: (context) => CreateQuiz(
+                              //             userId: widget.userProfile.id!,topic: topic)));
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue,
-
                             ),
                             child: const Text(
-                              'Start',
+                              'Open',
                               style: TextStyle(color: Colors.white),
                             ),
-
                           ),
                         if (!isActive)
                           ElevatedButton(
@@ -339,13 +348,11 @@ class _HomeState extends State<Home> {
                             },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blueGrey,
-
                             ),
                             child: const Text(
                               'Add',
                               style: TextStyle(color: Colors.white),
                             ),
-
                           ),
                       ],
                     ),
@@ -359,7 +366,13 @@ class _HomeState extends State<Home> {
             ? null
             : FloatingActionButton(
                 tooltip: "Add new quiz.",
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              CreateQuiz(userId: widget.userProfile.id!)));
+                },
                 child: const Icon(Icons.add),
               ),
       ),

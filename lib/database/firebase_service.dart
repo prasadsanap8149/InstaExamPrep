@@ -172,6 +172,34 @@ class FirebaseService {
     return UserProfile.fromMap(docSnapshot.data() as Map<String, dynamic>);
   }
 
+  Future<void> addQuizData(Map<String, dynamic> quizData, String quizId) async {
+    await FirebaseFirestore.instance
+        .collection(Constants.quizCollection)
+        .doc(quizId)
+        .set(quizData)
+        .catchError((e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    });
+  }
+
+  getQuizStream(bool userFlag, String quizTitle) {
+    debugPrint(" getQuizStream $userFlag:: $quizTitle");
+    if (userFlag) {
+      return firebaseInstance
+          .collection(Constants.quizCollection)
+          .where('category', isEqualTo: quizTitle)
+          .snapshots();
+    } else {
+      return firebaseInstance
+          .collection(Constants.quizCollection)
+          .where('isLive', isEqualTo: true)
+          .where('category', isEqualTo: quizTitle)
+          .snapshots();
+    }
+  }
+
 
 }
 

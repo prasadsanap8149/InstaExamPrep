@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:smartexamprep/helper/firebase_option_keys.dart';
 import 'package:smartexamprep/helper/local_storage.dart';
 import 'package:smartexamprep/models/user_profile.dart';
-import 'package:smartexamprep/screens/home.dart';
+import 'package:smartexamprep/screens/category_home.dart';
 import 'package:smartexamprep/screens/offline_screen.dart';
 import 'package:smartexamprep/screens/singup.dart';
 import 'package:smartexamprep/widgets/app_bar.dart';
@@ -127,7 +127,7 @@ class _MyAppState extends State<MyApp> {
       }
 
       final user =
-          await firebaseService.getUserDetails(userId: userLoginIdDetails!);
+      await firebaseService.getUserDetails(userId: userLoginIdDetails!);
       await LocalStorage.saveUserLoggedInDetails(
         isLoggedIn: true,
         userId: user.id!,
@@ -179,9 +179,12 @@ class _MyAppState extends State<MyApp> {
       ),
       home: _isUserLoggedIn
           ? (userProfile != null
-              ? Home(userProfile: userProfile!)
-              : const Center(child: Text("Loading user profile...")))
+          ? Home(userProfile: userProfile!)
+          : const Center(
+        child: Text("Loading user profile..."),
+      ))
           : const SignUp(),
     );
   }
 }
+

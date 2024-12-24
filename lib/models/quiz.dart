@@ -1,24 +1,22 @@
-import 'package:smartexamprep/models/question.dart';
-
 class Quiz {
   final String id;
   final String title;
-  final List<Question> questions;
-  final String categoryId;
+  final String category;
   final String quizType;
   final bool isDownloaded;
   final int difficultyLevel;
+  final String quizDescription;
   final int hour;
   final int minute;
   final bool isLive;
   final DateTime createdOn;
-  final DateTime createdBy;
+  final String createdBy;
 
   Quiz({
     required this.id,
     required this.title,
-    required this.questions,
-    required this.categoryId,
+    required this.quizDescription,
+    required this.category,
     required this.quizType,
     this.isDownloaded = false,
     this.difficultyLevel = 1,
@@ -31,25 +29,40 @@ class Quiz {
 
   @override
   String toString() {
-    return 'Quiz{id: $id, title: $title, questions: $questions, categoryId: $categoryId, quizType: $quizType, isDownloaded: $isDownloaded, difficultyLevel: $difficultyLevel, hour: $hour, minute: $minute, isLive: $isLive, createdOn: $createdOn, createdBy: $createdBy}';
+    return 'Quiz{id: $id, title: $title, quizDescription: $quizDescription, category: $category, quizType: $quizType, isDownloaded: $isDownloaded, difficultyLevel: $difficultyLevel, hour: $hour, minute: $minute, isLive: $isLive, createdOn: $createdOn, createdBy: $createdBy}';
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'title': title,
+      'quizDescription': quizDescription,
+      'category': category,
+      'quizType': quizType,
+      'isDownloaded': isDownloaded,
+      'difficultyLevel': difficultyLevel,
+      'hour': hour,
+      'minute': minute,
+      'isLive': isLive,
+      'createdOn': createdOn.toIso8601String(),
+      'createdBy': createdBy,
+    };
   }
 
   factory Quiz.fromMap(Map<String, dynamic> map) {
     return Quiz(
       id: map['id'] as String,
       title: map['title'] as String,
-      questions: (map['questions'] as List<dynamic>)
-          .map((e) => Question.fromMap(e as Map<String, dynamic>))
-          .toList(),
-      categoryId: map['categoryId'] as String,
+      quizDescription: map['quizDescription'] as String,
+      category: map['category'] as String,
       quizType: map['quizType'] as String,
-      isDownloaded: map['isDownloaded'] as bool,
-      difficultyLevel: map['difficultyLevel'] as int,
+      isDownloaded: map['isDownloaded'] as bool? ?? false,
+      difficultyLevel: map['difficultyLevel'] as int? ?? 1,
       hour: map['hour'] as int,
       minute: map['minute'] as int,
-      isLive: map['isLive'] as bool,
+      isLive: map['isLive'] as bool? ?? false,
       createdOn: DateTime.parse(map['createdOn'] as String),
-      createdBy: DateTime.parse(map['createdBy'] as String),
+      createdBy: map['createdBy'] as String,
     );
   }
 }
