@@ -1,13 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:smartexamprep/helper/app_colors.dart';
 import 'package:smartexamprep/models/quiz.dart';
 import 'package:smartexamprep/models/user_profile.dart';
 
 import '../database/firebase_service.dart';
 import '../helper/constants.dart';
-import '../widgets/app_bar.dart';
 import '../widgets/quiz_tile.dart';
+import 'create_quiz.dart';
 
 class QuizHome extends StatefulWidget {
   final String quizTitle;
@@ -90,9 +91,10 @@ class _QuizHomeState extends State<QuizHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: appBar(context),
+        title: Text(widget.quizTitle),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        foregroundColor: AppColors.accent,
+        backgroundColor:AppColors.appBarBackground,
         elevation: 0.0,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
@@ -104,20 +106,29 @@ class _QuizHomeState extends State<QuizHome> {
                 : true,
             widget.quizTitle),
       ),
-      floatingActionButton:
-          widget.userProfile.userRole == Constants.userRoles[0]
-              ? null
-              : FloatingActionButton(
-                  tooltip: "Add new quiz.",
-                  onPressed: () {
-                    // Navigator.push(
-                    //     context,
-                    //     MaterialPageRoute(
-                    //         builder: (context) =>
-                    //             CreateQuiz(userId: userLoginId.toString())));
-                  },
-                  child: const Icon(Icons.add),
-                ),
+      floatingActionButton: widget.userProfile.userRole == Constants.userRoles[0]
+          ? null
+          : FloatingActionButton(
+        tooltip: "Add new quiz.",
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CreateQuiz(
+                userId: widget.userProfile.id!,
+                topic: widget.quizTitle,
+              ),
+            ),
+          );
+        },
+        backgroundColor: AppColors.fabBackground, // custom background color
+        foregroundColor: AppColors.fabIconColor, // custom icon color if needed
+        child: const Icon(
+          Icons.add,
+          color: AppColors.appBarIcon,
+        ),
+      ),
+
     );
   }
 }

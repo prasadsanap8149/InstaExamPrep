@@ -25,7 +25,8 @@ class UserService {
         preferredLanguage: userProfile.preferredLanguage,
         mobile: userProfile.mobile,
         createdOn: userProfile.createdOn,
-        userRole: Constants.userRoles[0]
+        userRole: Constants.userRoles[0],
+        gender: userProfile.gender
       );
       if (kDebugMode) {
         print("Data ::${localUserProfile.toString()}");

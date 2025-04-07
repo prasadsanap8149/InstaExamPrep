@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:smartexamprep/helper/app_colors.dart';
 import 'package:smartexamprep/models/user_profile.dart';
 import 'package:smartexamprep/utils/utils.dart';
 
-import '../helper/constants.dart';
 import '../helper/helper_functions.dart';
 import '../widgets/app_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
   final UserProfile profileDetails;
+
   const ProfileScreen({super.key, required this.profileDetails});
 
   @override
@@ -17,15 +18,13 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileState extends State<ProfileScreen> {
   late List<String> interests;
-  bool buttonFlag=false;
+  bool buttonFlag = false;
 
   @override
   void initState() {
     super.initState();
     interests = widget.profileDetails.selectedTopics.toList();
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   String _getInitials(String name) {
@@ -58,17 +57,19 @@ class _ProfileState extends State<ProfileScreen> {
   }
 
   _submitProfileInterestChanges() async {
-    if(buttonFlag) {
+    if (buttonFlag) {
       if (interests.length > 1) {
-
-        bool isSuccess = true;/*await firebaseService.updateUserProfileInterest(
+        bool isSuccess =
+            true; /*await firebaseService.updateUserProfileInterest(
             userId: widget.userId, interests: interests);*/
         if (isSuccess) {
-          HelperFunctions.showSnackBarMessage(context: context,
+          HelperFunctions.showSnackBarMessage(
+              context: context,
               message: "Interest updated successfully!!",
               color: Colors.greenAccent);
         } else {
-          HelperFunctions.showSnackBarMessage(context: context,
+          HelperFunctions.showSnackBarMessage(
+              context: context,
               message: "Interest not updated!!",
               color: Colors.redAccent);
         }
@@ -78,8 +79,9 @@ class _ProfileState extends State<ProfileScreen> {
             message: 'At least one interest must be selected.',
             color: Colors.redAccent);
       }
-    }else{
-      HelperFunctions.showSnackBarMessage(context: context,
+    } else {
+      HelperFunctions.showSnackBarMessage(
+          context: context,
           message: "You have not made any changes!",
           color: Colors.orangeAccent);
     }
@@ -89,142 +91,156 @@ class _ProfileState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: appBar(context),
+        title: const Text("Profile Details"),
+        foregroundColor: AppColors.accent,
+        backgroundColor: AppColors.appBarBackground,
         centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [Colors.greenAccent, Colors.black],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: const [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 10,
-                  offset: Offset(0, 5),
-                ),
-              ],
-            ),
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.amber,
-                    child: Text(
-                      _getInitials(widget.profileDetails.name.toString()),
-                      style: const TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [AppColors.blue, AppColors.blue],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                ),
-                const SizedBox(height: 20),
-                _buildProfileInfoRow(Icons.email, 'Email:',
-                    widget.profileDetails.email.toString()),
-                _buildProfileInfoRow(Icons.person, 'Name:',
-                    widget.profileDetails.name.toString()),
-                _buildProfileInfoRow(Icons.phone, 'Mobile:',
-                    widget.profileDetails.mobile.toString()),
-                _buildProfileInfoRow(Icons.account_box, 'Role:',
-                    widget.profileDetails.userRole.toString()),
-                _buildProfileInfoRow(Icons.calendar_today, 'Joined:',
-                    utils.formatDateTime(widget.profileDetails.createdOn)),
-                const SizedBox(height: 20),
-                const Text(
-                  'Topics:',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Column(
-                  children: [
-                    Wrap(
-                      spacing: 3.0,
-                      children: Constants.topicNames
-                          .map((interest) => ChoiceChip(
-                        label: Text(interest),
-                        selected: interests.contains(interest),
-                        selectedColor: Colors.greenAccent,
-                        backgroundColor: Colors.amberAccent,
-                        onSelected: (selected) {
-                          _toggleInterest(interest);
-                          buttonFlag=true;
-                        },
-                        labelStyle: TextStyle(
-                          color:
-                          Constants.topicNames.contains(interest)
-                              ? Colors.black
-                              : Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ))
-                          .toList(),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    ElevatedButton(
-                      style: TextButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.blueAccent.shade400,
-                      ),
-
-                      onPressed: _submitProfileInterestChanges,
-                      child: const Text('Update Changes'),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10,
+                      offset: Offset(0, 5),
                     ),
                   ],
-                )
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+                ),
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    Center(
+                      child: CircleAvatar(
+                        radius: 50,
+                        backgroundColor: AppColors.primary,
+                        child: Text(
+                          _getInitials(widget.profileDetails.name.toString()),
+                          style: const TextStyle(
+                            fontSize: 40,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 30),
 
-  Widget _buildProfileInfoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.amberAccent),
-          const SizedBox(width: 10),
-          Text(
-            '$label ',
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+                    _buildProfileInfoRow(Icons.email, 'Email',
+                        widget.profileDetails.email.toString()),
+
+                    _buildProfileInfoRow(Icons.person, 'Name',
+                        widget.profileDetails.name.toString()),
+
+                    _buildProfileInfoRow(Icons.phone, 'Mobile',
+                        widget.profileDetails.mobile.toString()),
+
+                    _buildProfileInfoRow(Icons.account_box, 'Role',
+                        widget.profileDetails.userRole.toString()),
+
+                    _buildProfileInfoRow(Icons.calendar_today, 'Joined',
+                        utils.formatDateTime(widget.profileDetails.createdOn)),
+
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
             ),
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: const TextStyle(
-                fontSize: 18,
-                color: Colors.amberAccent,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16.0),
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.arrow_back,color: AppColors.fabIconColor,),
+              label: const Text('Back'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: AppColors.fabIconColor,
+                backgroundColor: AppColors.fabBackground,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
+              onPressed: () => Navigator.pop(context),
             ),
           ),
         ],
       ),
     );
   }
+
+  // Widget _buildProfileInfoRow(IconData icon, String label, String value) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 8.0),
+  //     child: Row(
+  //       children: [
+  //         Icon(icon, color: Colors.amberAccent),
+  //         const SizedBox(width: 10),
+  //         Text(
+  //           '$label ',
+  //           style: const TextStyle(
+  //             fontSize: 18,
+  //             fontWeight: FontWeight.bold,
+  //             color: Colors.white,
+  //           ),
+  //         ),
+  //         Expanded(
+  //           child: Text(
+  //             value,
+  //             style: const TextStyle(
+  //               fontSize: 18,
+  //               color: Colors.amberAccent,
+  //             ),
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  Widget _buildProfileInfoRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color:AppColors.fabBackground,),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.fabBackground,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: AppColors.accent,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
 }

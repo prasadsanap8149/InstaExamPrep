@@ -1,28 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:random_string/random_string.dart';
+import 'package:smartexamprep/database/firebase_service.dart';
+import 'package:smartexamprep/helper/app_colors.dart';
+import 'package:smartexamprep/helper/helper_functions.dart';
+import 'package:smartexamprep/models/question.dart';
 import 'package:smartexamprep/models/question_list.dart';
+import 'package:smartexamprep/screens/view_question_list.dart';
+
 import '../models/options.dart';
 
 class AddQuestionsDynamic extends StatefulWidget {
-  const AddQuestionsDynamic({super.key});
+  final String userId;
+  final String quizId;
+
+  const AddQuestionsDynamic(
+      {super.key, required this.userId, required this.quizId});
 
   @override
-  _AddQuestionsDynamicState createState() => _AddQuestionsDynamicState();
+  State<AddQuestionsDynamic> createState() => _AddQuestionsDynamicState();
 }
 
 class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? selectedQuestionType;
   final List<String> questionTypes = ['Multiple Choice', 'True/False | Yes/No'];
-  final List<String> languages = ['English', 'Marathi', 'Hindi'];
-  final Map<String, bool> languageSelection = {
+  Map<String, bool> languageSelection = {
     'English': false,
     'Marathi': false,
     'Hindi': false,
   };
   List<String> selectedLanguage = [];
   List<QuestionsList> localizedQuestions = [];
-  Map<String, List<Options>> languageOptions = {}; // Map to store options per language
+  List<Questions> finalQuestionList = [];
+  Map<String, List<Options>> languageOptions = {};
 
   void initializeMultipleChoiceOptions(String language) {
     languageOptions[language] = [
@@ -95,7 +106,6 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
                   ],
                 ),
                 const SizedBox(width: 8.0),
-
                 // Option Content Text Area
                 Expanded(
                   child: TextFormField(
@@ -139,7 +149,7 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
           alignment: Alignment.centerRight,
           child: ElevatedButton.icon(
             onPressed: () => addOption(language),
-            icon: const Icon(Icons.add_circle, size: 18),
+            icon: const Icon(Icons.add_circle, size: 18,color: AppColors.fabIconColor,),
             label: const Text(
               'Add Option',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -186,7 +196,8 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
                   } else {
                     selectedLanguage.remove(lang);
                     localizedQuestions.removeWhere((q) => q.language == lang);
-                    languageOptions.remove(lang); // Remove options for the language
+                    languageOptions
+                        .remove(lang); // Remove options for the language
                   }
                 });
               },
@@ -219,8 +230,9 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
               ),
               onChanged: (value) {
                 setState(() {
-                  localizedQuestions.firstWhere((q) => q.language == lang,
-                      orElse: () => QuestionsList(language: lang))
+                  localizedQuestions
+                      .firstWhere((q) => q.language == lang,
+                          orElse: () => QuestionsList(language: lang))
                       .content = value;
                 });
               },
@@ -244,8 +256,9 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
               ),
               onChanged: (value) {
                 setState(() {
-                  localizedQuestions.firstWhere((q) => q.language == lang,
-                      orElse: () => QuestionsList(language: lang))
+                  localizedQuestions
+                      .firstWhere((q) => q.language == lang,
+                          orElse: () => QuestionsList(language: lang))
                       .explanation = value;
                 });
               },
@@ -262,23 +275,98 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
 
   void saveLocalizedQuestions() {
     if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-      for (QuestionsList question in localizedQuestions) {
-        debugPrint('Saving the question ::${question.toString()}');
-        debugPrint('Saving question for ${question.language}: ${question.content}');
-        debugPrint('Explanation: ${question.explanation}');
-
-        // Save the options
-        List<Options> optionsForLanguage = languageOptions[question.language]!;
-        for (var option in optionsForLanguage) {
-          debugPrint('Option: ${option.option}, Is Correct: ${option.isCorrect}');
-        }
+      //Check question language selected or not
+      if (selectedLanguage.isEmpty) {
+        HelperFunctions.showSnackBarMessage(
+            context: context,
+            message: 'Please select the language',
+            color: Colors.redAccent);
+        return;
       }
+      _formKey.currentState!.save();
+      bool flag;
+      for (QuestionsList question in localizedQuestions) {
+        flag = true;
+        for (var e in languageOptions[question.language]!) {
+          if (e.isCorrect) {
+            flag = false;
+          }
+        }
+        if (flag) {
+          HelperFunctions.showSnackBarMessage(
+              context: context,
+              message: 'Please select at least one correct option',
+              color: Colors.redAccent);
+          return;
+        }
+
+        question.options = languageOptions[question.language]!;
+
+        question.userId = widget.userId;
+        // Save the options
+        debugPrint('Saving the question ::${question.toString()}');
+
+        // List<Options> optionsForLanguage = languageOptions[question.language]!;
+      }
+      finalQuestionList.add(Questions(
+          id: randomAlphaNumeric(10),
+          difficultyLevel: 1,
+          type: selectedQuestionType,
+          questionsList: localizedQuestions));
+      resetAll();
     }
   }
 
-  void saveQuestion() {
-    debugPrint('Question saved.');
+  void resetAll() {
+    setState(() {
+      languageOptions = {};
+      selectedLanguage = [];
+      localizedQuestions = [];
+      languageOptions = {};
+      languageSelection = {
+        'English': false,
+        'Marathi': false,
+        'Hindi': false,
+      };
+    });
+  }
+
+  void viewQuestions() {
+    debugPrint('Question List ::${finalQuestionList.toString()}');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => ViewQuestionList(
+              quizId: widget.quizId, questionList: finalQuestionList)),
+    );
+  }
+
+  void saveQuestion() async {
+    debugPrint('Question List ::${finalQuestionList.toString()}');
+    await firebaseService.saveOrUpdateQuestions(
+        finalQuestionList, widget.quizId);
+  }
+
+  void fetchQuestion() async {
+    // Fetch the questions asynchronously
+    final fetchedQuestions =
+        await firebaseService.fetchQuestions(widget.quizId);
+
+    // Update the state with the fetched data
+    setState(() {
+      finalQuestionList = fetchedQuestions;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchQuestion();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   @override
@@ -287,7 +375,8 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
       appBar: AppBar(
         title: const Text('Add Questions'),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: AppColors.appBarBackground,
+        foregroundColor: AppColors.accent,
         elevation: 0.0,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
@@ -296,7 +385,7 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               DropdownButtonFormField<String>(
                 value: selectedQuestionType,
@@ -318,22 +407,22 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
                 },
                 decoration: const InputDecoration(labelText: 'Question Type'),
                 validator: (value) =>
-                value == null ? 'Please select a question type' : null,
+                    value == null ? 'Please select a question type' : null,
               ),
               buildLanguageSelection(),
               const SizedBox(height: 16),
               buildLocalizedForms(),
               const SizedBox(height: 16),
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ElevatedButton.icon(
                     onPressed: saveLocalizedQuestions,
-                    icon: const Icon(Icons.add, size: 18),
+                    icon: const Icon(Icons.add, size: 18,color: AppColors.fabIconColor,),
                     label: const Text(
                       'Add Question',
                       style:
-                      TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: AppColors.buttonText),
                     ),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
@@ -341,19 +430,17 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      backgroundColor: Colors.blueAccent,
-                      foregroundColor: Colors.white,
-                      shadowColor: Colors.blueAccent,
+                      backgroundColor: AppColors.buttonBackground,
                       elevation: 4,
                     ),
                   ),
                   ElevatedButton.icon(
-                    onPressed: saveQuestion,
-                    icon: const Icon(Icons.visibility, size: 18),
+                    onPressed: viewQuestions,
+                    icon: const Icon(Icons.visibility, size: 18,color: AppColors.fabIconColor,),
                     label: const Text(
                       'View Questions',
                       style:
-                      TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: AppColors.buttonText,),
                     ),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
@@ -361,13 +448,29 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
-                      backgroundColor: Colors.greenAccent,
-                      foregroundColor: Colors.white,
-                      shadowColor: Colors.blueAccent,
+                      backgroundColor: AppColors.buttonBackground,
                       elevation: 4,
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton.icon(
+                onPressed: saveQuestion,
+                icon: const Icon(Icons.save, size: 18,color: AppColors.fabIconColor,),
+                label: const Text(
+                  'Save Questions',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: AppColors.buttonText,),
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  backgroundColor: AppColors.buttonBackground,
+                  elevation: 4,
+                ),
               ),
             ],
           ),

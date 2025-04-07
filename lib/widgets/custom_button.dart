@@ -1,4 +1,5 @@
 import "package:flutter/material.dart";
+import "package:smartexamprep/helper/app_colors.dart";
 
 Widget customButton(
     {required BuildContext context,
@@ -8,7 +9,7 @@ Widget customButton(
   return Container(
     padding: const EdgeInsets.symmetric(vertical: 18),
     decoration: BoxDecoration(
-      color: btnColor ?? Colors.greenAccent,
+      color: AppColors.fabIconColor,
       borderRadius: BorderRadius.circular(30),
     ),
     alignment: Alignment.center,
@@ -16,7 +17,7 @@ Widget customButton(
     child: Text(
       btnLabel,
       style: const TextStyle(
-        color: Colors.white,
+        color: AppColors.buttonText,
         fontSize: 15,
       ),
     ),

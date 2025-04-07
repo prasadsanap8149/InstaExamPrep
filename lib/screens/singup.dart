@@ -2,10 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smartexamprep/helper/api_constants.dart';
+import 'package:smartexamprep/helper/app_colors.dart';
 import 'package:smartexamprep/helper/constants.dart';
 import 'package:smartexamprep/helper/local_storage.dart';
 import 'package:smartexamprep/models/user_profile.dart';
-import 'package:smartexamprep/screens/exams_home.dart';
 import 'package:smartexamprep/screens/signin.dart';
 import 'package:smartexamprep/services/user_service.dart';
 import 'package:smartexamprep/utils/validator_util.dart';
@@ -15,7 +15,7 @@ import '../helper/helper_functions.dart';
 import '../models/response.dart';
 import '../widgets/app_bar.dart';
 import '../widgets/custom_button.dart';
-import 'category_home.dart';
+import 'home_screen.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -27,7 +27,8 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   final _formKey = GlobalKey<FormState>();
   Set<String> selectedTopics = {};
-
+  String _selectedGender = 'Male';
+  double _buttonScale = 1.0;
   final TextEditingController nameTextEditingController =
       TextEditingController();
   final TextEditingController emailTextEditingController =
@@ -109,7 +110,8 @@ class _SignUpState extends State<SignUp> {
           preferredLanguage: preferredLanguageController.text.trim(),
           mobile: mobileTextEditingController.text.trim(),
           createdOn: DateTime.timestamp(),
-          userRole: Constants.userRoles[0]
+          userRole: Constants.userRoles[0],
+          gender: _selectedGender,
         );
         Response response = await userService.createNewUser(
             emailTextEditingController.text.trim(),
@@ -119,7 +121,7 @@ class _SignUpState extends State<SignUp> {
         if (response.statusCode == ApiConstants.success) {
           var user = await firebaseService.signInEmailAndPass(
               emailTextEditingController.text.trim(),
-              passwordTextEditingController.text.trim());
+              passwordTextEditingController.text.trim(),context);
 
           if (user != null) {
             if (kDebugMode) {
@@ -131,7 +133,7 @@ class _SignUpState extends State<SignUp> {
 
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => Home(userProfile: userProfile)),
+              MaterialPageRoute(builder: (context) => HomeScreen(userProfile: userProfile)),
             );
           }
         }
@@ -190,6 +192,9 @@ class _SignUpState extends State<SignUp> {
                           children: [
                             TextFormField(
                               keyboardType: TextInputType.visiblePassword,
+                              style: const TextStyle(
+                                color: AppColors.accent,
+                              ),
                               validator: (value) {
                                 return validatorService.validateName(
                                     value: value!, field: 'Name');
@@ -197,7 +202,7 @@ class _SignUpState extends State<SignUp> {
                               controller: nameTextEditingController,
                               decoration: const InputDecoration(
                                 hintText: "Name",
-                                prefixIcon: Icon(Icons.person),
+                                prefixIcon: Icon(Icons.person,color: AppColors.fabIconColor,),
                               ),
                             ),
                             SizedBox(
@@ -205,12 +210,15 @@ class _SignUpState extends State<SignUp> {
                             ),
                             TextFormField(
                               keyboardType: TextInputType.visiblePassword,
+                              style: const TextStyle(
+                                color: AppColors.accent,
+                              ),
                               validator: (value) {
                                 return validatorService.validateEmail(value);
                               },
                               decoration: const InputDecoration(
                                 hintText: "Email",
-                                prefixIcon: Icon(Icons.email),
+                                prefixIcon: Icon(Icons.email,color: AppColors.fabIconColor,),
                               ),
                               controller: emailTextEditingController,
                             ),
@@ -223,9 +231,12 @@ class _SignUpState extends State<SignUp> {
                                     value: value!);
                               },
                               keyboardType: TextInputType.number,
+                              style: const TextStyle(
+                                color: AppColors.accent,
+                              ),
                               decoration: const InputDecoration(
                                 hintText: "Mobile",
-                                prefixIcon: Icon(Icons.call),
+                                prefixIcon: Icon(Icons.call,color: AppColors.fabIconColor,),
                               ),
                               controller: mobileTextEditingController,
                             ),
@@ -235,14 +246,17 @@ class _SignUpState extends State<SignUp> {
                             TextFormField(
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return "Error";
+                                  return "Please enter language.";
                                 }
                                 return null;
                               },
                               keyboardType: TextInputType.number,
+                              style: const TextStyle(
+                                color: AppColors.accent,
+                              ),
                               decoration: const InputDecoration(
                                 hintText: "Language",
-                                prefixIcon: Icon(Icons.language),
+                                prefixIcon: Icon(Icons.language,color: AppColors.fabIconColor,),
                               ),
                               controller: preferredLanguageController,
                             ),
@@ -251,6 +265,9 @@ class _SignUpState extends State<SignUp> {
                             ),
                             TextFormField(
                               obscureText: true,
+                              style: const TextStyle(
+                                color: AppColors.accent,
+                              ),
                               validator: (value) {
                                 return value!.isEmpty
                                     ? Constants.passwordMessage
@@ -260,7 +277,7 @@ class _SignUpState extends State<SignUp> {
                               },
                               decoration: const InputDecoration(
                                 hintText: "Password",
-                                prefixIcon: Icon(Icons.lock),
+                                prefixIcon: Icon(Icons.lock,color: AppColors.fabIconColor,),
                               ),
                               controller: passwordTextEditingController,
                             ),
@@ -269,6 +286,9 @@ class _SignUpState extends State<SignUp> {
                             ),
                             TextFormField(
                               obscureText: passwordVisible,
+                              style: const TextStyle(
+                                color: AppColors.accent,
+                              ),
                               validator: (value) {
                                 return value!.isEmpty
                                     ? Constants.passwordMessage
@@ -278,7 +298,9 @@ class _SignUpState extends State<SignUp> {
                               },
                               decoration: InputDecoration(
                                 hintText: "Re-Password",
-                                prefixIcon: const Icon(Icons.lock),
+
+                                prefixIcon:  const Icon(
+                                  Icons.lock,color: AppColors.fabIconColor,),
                                 suffixIcon: IconButton(
                                   icon: Icon(passwordVisible
                                       ? Icons.visibility
@@ -294,6 +316,37 @@ class _SignUpState extends State<SignUp> {
                               ),
                               controller: rePasswordTextEditingController,
                             ),
+                            const Text(
+                              'Select Gender',
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Radio<String>(
+                                  value: 'Male',
+                                  groupValue: _selectedGender,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedGender = value!;
+                                    });
+                                  },
+                                ),
+                                const Text('Male'),
+                                Radio<String>(
+                                  value: 'Female',
+                                  groupValue: _selectedGender,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      _selectedGender = value!;
+                                    });
+                                  },
+                                ),
+                                const Text('Female'),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+
                             const Text(
                               'Select your quiz interest',
                               style: TextStyle(
@@ -322,14 +375,32 @@ class _SignUpState extends State<SignUp> {
                         child: Column(
                           children: [
                             GestureDetector(
-                              onTap: () {
+                              onTapDown: (_) {
+                                setState(() {
+                                  _buttonScale = 0.95;
+                                });
+                              },
+                              onTapUp: (_) {
+                                setState(() {
+                                  _buttonScale = 1.0;
+                                });
                                 signUp();
                               },
-                              child: customButton(
-                                context: context,
-                                btnLabel: "Sign up",
+                              onTapCancel: () {
+                                setState(() {
+                                  _buttonScale = 1.0;
+                                });
+                              },
+                              child: AnimatedScale(
+                                scale: _buttonScale,
+                                duration: const Duration(milliseconds: 100),
+                                child: customButton(
+                                  context: context,
+                                  btnLabel: "Sign up",
+                                ),
                               ),
                             ),
+
                             const SizedBox(
                               height: 10,
                             ),

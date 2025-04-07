@@ -14,6 +14,7 @@ class UserProfile {
   final int? streak;
   final SubscriptionPlan? subscriptionPlan;
   final String userRole;
+  final String gender;
 
   UserProfile({
     this.id,
@@ -28,6 +29,7 @@ class UserProfile {
     this.subscriptionPlan,
     this.updatedOn,
     required this.userRole,
+    required this.gender,
   });
 
   // Method to convert UserProfile to a map
@@ -44,6 +46,7 @@ class UserProfile {
       'points': points,
       'streak': streak,
       'userRole': userRole,
+      'gender': gender,
       'subscriptionPlan': subscriptionPlan?.toString(), // Convert enum to string if applicable
     };
   }
@@ -66,6 +69,7 @@ class UserProfile {
       streak: map['streak'] as int?,
       userRole: map['userRole'] as String,
       subscriptionPlan: map['subscriptionPlan'],
+      gender: map['gender'] as String,
     );
   }
 
@@ -76,7 +80,7 @@ class UserProfile {
   String toString() {
     return 'UserProfile(id: $id, name: $name, email: $email, mobile: $mobile, '
         'selectedTopics: $selectedTopics, preferredLanguage: $preferredLanguage, '
-        'createdOn: $createdOn, updatedOn: $updatedOn, points: $points, '
+        'createdOn: $createdOn, updatedOn: $updatedOn, points: $points, gender:$gender,'
         'streak: $streak, userRole: $userRole, subscriptionPlan: $subscriptionPlan)';
   }
 }

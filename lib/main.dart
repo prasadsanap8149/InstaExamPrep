@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:smartexamprep/helper/firebase_option_keys.dart';
 import 'package:smartexamprep/helper/local_storage.dart';
 import 'package:smartexamprep/models/user_profile.dart';
-import 'package:smartexamprep/screens/category_home.dart';
+import 'package:smartexamprep/screens/home_screen.dart';
 import 'package:smartexamprep/screens/offline_screen.dart';
 import 'package:smartexamprep/screens/singup.dart';
 import 'package:smartexamprep/widgets/app_bar.dart';
@@ -145,6 +145,7 @@ class _MyAppState extends State<MyApp> {
       if (kDebugMode) {
         print("Error fetching user details: $error");
       }
+
     }
   }
 
@@ -179,9 +180,9 @@ class _MyAppState extends State<MyApp> {
       ),
       home: _isUserLoggedIn
           ? (userProfile != null
-          ? Home(userProfile: userProfile!)
+          ? HomeScreen(userProfile: userProfile!)
           : const Center(
-        child: Text("Loading user profile..."),
+        child:  SignUp(),
       ))
           : const SignUp(),
     );

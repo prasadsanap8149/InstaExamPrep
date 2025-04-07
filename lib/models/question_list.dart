@@ -5,14 +5,14 @@ class QuestionsList {
   String? content;
   List<Options>? options;
   String? explanation;
-  String? correctOptionId;
+  String? userId;
 
   QuestionsList({
     this.language,
     this.content,
     this.options,
     this.explanation,
-    this.correctOptionId,
+    this.userId
   });
 
   QuestionsList.fromJson(Map<String, dynamic> json) {
@@ -25,7 +25,7 @@ class QuestionsList {
       });
     }
     explanation = json['explanation'];
-    correctOptionId = json['correctOptionId'];
+    userId = json['userId'];
   }
 
   Map<String, dynamic> toJson() {
@@ -36,7 +36,7 @@ class QuestionsList {
       data['options'] = options!.map((v) => v.toJson()).toList();
     }
     data['explanation'] = explanation;
-    data['correctOptionId'] = correctOptionId;
+    data['userId'] = userId;
     return data;
   }
 
@@ -49,7 +49,7 @@ class QuestionsList {
           ? (map['options'] as List).map((item) => Options.fromMap(item)).toList()
           : null,
       explanation: map['explanation'],
-      correctOptionId: map['correctOptionId'],
+      userId: map['userId'],
     );
   }
 
@@ -60,12 +60,12 @@ class QuestionsList {
       'content': content,
       'options': options?.map((o) => o.toMap()).toList(),
       'explanation': explanation,
-      'correctOptionId': correctOptionId,
+      'userId': userId,
     };
   }
 
   @override
   String toString() {
-    return 'QuestionsList(language: $language, content: $content, options: $options, explanation: $explanation, correctOptionId: $correctOptionId)';
+    return 'QuestionsList(language: $language, content: $content, options: $options, explanation: $explanation, userId: $userId';
   }
 }

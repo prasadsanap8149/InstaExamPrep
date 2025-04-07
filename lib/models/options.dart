@@ -6,15 +6,15 @@ class Options {
 
   Options({required this.option, required this.isCorrect});
 
-  // Factory method to create an Options object from a map (used for fromJson)
+  // Factory method to create an Options object from a map
   factory Options.fromMap(Map<String, dynamic> map) {
     return Options(
-      option: map['option'],
-      isCorrect: map['isCorrect'],
+      option: map['option'] as String,
+      isCorrect: map['isCorrect'] as bool,
     );
   }
 
-  // Convert Options object to map (used for toMap)
+  // Convert Options object to map
   Map<String, dynamic> toMap() {
     return {
       'option': option,
@@ -23,14 +23,15 @@ class Options {
   }
 
   // Convert Options object to JSON string
-  String toJson() {
-    final jsonMap = toMap();
-    return jsonEncode(jsonMap); // Convert map to JSON string
-  }
+  String toJson() => jsonEncode(toMap());
 
   // Create Options object from JSON string
-  factory Options.fromJson(String jsonString) {
-    final jsonMap = jsonDecode(jsonString); // Convert JSON string to map
-    return Options.fromMap(jsonMap);
+  factory Options.fromJson(String jsonString) =>
+      Options.fromMap(jsonDecode(jsonString));
+
+  // Override toString for better readability
+  @override
+  String toString() {
+    return 'Options(option: $option, isCorrect: $isCorrect)';
   }
 }

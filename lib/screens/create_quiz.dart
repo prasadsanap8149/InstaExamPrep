@@ -3,19 +3,17 @@ import 'package:flutter/services.dart';
 import 'package:random_string/random_string.dart';
 import 'package:smartexamprep/database/firebase_service.dart';
 import 'package:smartexamprep/models/quiz.dart';
-import 'package:smartexamprep/screens/dynamic_question_form.dart';
 import 'package:smartexamprep/screens/question_form.dart';
 
 import '../helper/constants.dart';
 import '../helper/helper_functions.dart';
-import '../widgets/app_bar.dart';
 import '../widgets/custom_button.dart';
 
 class CreateQuiz extends StatefulWidget {
   final String userId;
-  final String? topic;
+  final String topic;
 
-  const CreateQuiz({super.key, required this.userId, this.topic});
+  const CreateQuiz({super.key, required this.userId, required this.topic});
 
   @override
   State<CreateQuiz> createState() => _CreateQuizState();
@@ -41,7 +39,7 @@ class _CreateQuizState extends State<CreateQuiz> {
 
   submitQuizForm() async {
     if ((quizHour == 0 && (quizMinute == 0)) ||
-        (quizHour == null && (quizMinute == 0))) {
+        (quizHour == 0 && (quizMinute == 0))) {
       HelperFunctions.showSnackBarMessage(
           context: context,
           message: 'Please select quiz hour or minute',
@@ -79,8 +77,11 @@ class _CreateQuizState extends State<CreateQuiz> {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => AddQuestionsDynamic()//DynamicQuestionForm(userId: widget.userId, quiz: quiz),
-                      ),
+                          builder: (context) => AddQuestionsDynamic(
+                                userId: widget.userId,
+                              quizId:quizId
+                              ) //DynamicQuestionForm(userId: widget.userId, quiz: quiz),
+                          ),
                     );
                   })
                 });
@@ -92,7 +93,7 @@ class _CreateQuizState extends State<CreateQuiz> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: appBar(context),
+        title: Text(widget.topic),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
@@ -117,9 +118,8 @@ class _CreateQuizState extends State<CreateQuiz> {
                     Column(
                       children: [
                         Text(
-                          widget.topic != null
-                              ? "Create ${widget.topic} Quiz"
-                              : "Create Quiz",
+                          "Create ${widget.topic} Quiz"
+                              ,
                           style: const TextStyle(
                               fontSize: 30,
                               fontWeight: FontWeight.bold,
@@ -238,7 +238,7 @@ class _CreateQuizState extends State<CreateQuiz> {
                                           ),
                                           child: DropdownButton<String>(
                                             hint: const Text('Category'),
-                                            value: widget.topic ?? quizCategory,
+                                            value: widget.topic,
                                             underline: const SizedBox(),
                                             // Removes default underline
                                             items: Constants.topicNames

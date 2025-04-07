@@ -2,18 +2,19 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smartexamprep/database/firebase_service.dart';
+import 'package:smartexamprep/helper/helper_functions.dart';
 import 'package:smartexamprep/helper/local_storage.dart';
 import 'package:smartexamprep/models/user_profile.dart';
-import 'package:smartexamprep/screens/profile_screen.dart';
 import 'package:smartexamprep/screens/singup.dart';
 
+import '../helper/app_colors.dart';
 import '../helper/constants.dart';
-import '../helper/helper_functions.dart';
 import '../utils/validator_util.dart';
 import '../widgets/app_bar.dart';
 import '../widgets/custom_button.dart';
 import 'forgot_password.dart';
-import 'category_home.dart';
+import 'home_screen.dart';
+
 
 class SignIn extends StatefulWidget {
   const SignIn({super.key});
@@ -22,90 +23,83 @@ class SignIn extends StatefulWidget {
   State<SignIn> createState() => _SignInState();
 }
 
-class _SignInState extends State<SignIn> {
+class _SignInState extends State<SignIn> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController emailTextEditingController =
-  TextEditingController();
-  final TextEditingController passwordTextEditingController =
-  TextEditingController();
+  final TextEditingController emailTextEditingController = TextEditingController();
+  final TextEditingController passwordTextEditingController = TextEditingController();
 
   bool passwordVisible = true;
-
   bool isLoading = false;
-  bool isBannerLoaded = false;
-  //late BannerAd bannerAd;
+
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      duration: const Duration(milliseconds: 100),
+      vsync: this,
+      lowerBound: 0.95,
+      upperBound: 1.0,
+    )..forward();
+
+    _scaleAnimation = CurvedAnimation(parent: _animationController, curve: Curves.easeInOut);
+  }
 
   Future<void> _signIn() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        isLoading = true;
-      });
+      setState(() => isLoading = true);
 
       try {
-        var user = await firebaseService.signInEmailAndPass(
-            emailTextEditingController.text.trim(),
-            passwordTextEditingController.text.trim());
+        final user = await firebaseService.signInEmailAndPass(
+          emailTextEditingController.text.trim(),
+          passwordTextEditingController.text.trim(),
+          context,
+        );
 
         if (user != null) {
-          if (kDebugMode) {
-            print('Login user details:${user.userResponse.toString()}');
-          }
-          UserProfile userProfile= await firebaseService.getUserDetails(userId: user.userResponse!.uid);
-          setState(() {
-            isLoading = false;
-          });
+          final userProfile = await firebaseService.getUserDetails(
+            userId: user.userResponse!.uid,
+          );
 
           await LocalStorage.saveUserLoggedInDetails(
-              isLoggedIn: true, userId: userProfile.id!, userProfile: userProfile);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => Home(userProfile: userProfile)),
+            isLoggedIn: true,
+            userId: userProfile.id!,
+            userProfile: userProfile,
           );
+
+          if (mounted) {
+            setState(() => isLoading = false);
+            HelperFunctions.showSnackBarMessage(context: context, message: "Signed in successfully",color: Colors.green );
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => HomeScreen(userProfile: userProfile)),
+            );
+          }
         }
       } catch (err) {
-        setState(() {
-          isLoading = false;
-        });
-
-        debugPrint("Login error:: ${err.toString()}");
-        // Ensure the context is still valid
         if (mounted) {
+          setState(() => isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(err.toString()),
-              // Ensure the error message is shown
-              backgroundColor: Colors.red,
-            ),
+            SnackBar(content: Text("Error: ${err.toString()}"), backgroundColor: Colors.red),
           );
         }
       }
     }
   }
 
-  void showSnackBarMessage(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.red,
-        duration: const Duration(seconds: 3),
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.only(bottom: 600, right: 20, left: 20),
-      ),
-    );
-  }
-
-  //Clearing memory cache
   @override
   void dispose() {
-    super.dispose();
+    _animationController.dispose();
     emailTextEditingController.dispose();
     passwordTextEditingController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //bottomNavigationBar: const GetBannerAd(),
       appBar: AppBar(
         title: appBar(context),
         centerTitle: true,
@@ -114,37 +108,30 @@ class _SignInState extends State<SignIn> {
         systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       body: isLoading
-          ? const Center(
-        child: CircularProgressIndicator(),
-      )
+          ? const Center(child: CircularProgressIndicator())
           : Form(
         key: _formKey,
-        child: Container(
+        child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-             // Constants.isMobileDevice? const GetBannerAd():const Text(""),
-              const SizedBox(
-                height: 50,
-              ),
+              const SizedBox(height: 50),
               Column(
                 children: [
                   TextFormField(
                     controller: emailTextEditingController,
-                    validator: (value) {
-                      return validatorService.validateEmail(value);
-                    },
+                    style: const TextStyle(color: AppColors.accent),
+                    validator: (value) => validatorService.validateEmail(value),
                     decoration: const InputDecoration(
                       hintText: "Email",
-                      prefixIcon: Icon(Icons.email),
+                      prefixIcon: Icon(Icons.email, color: AppColors.fabIconColor),
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   TextFormField(
                     controller: passwordTextEditingController,
+                    style: const TextStyle(color: AppColors.accent),
                     obscureText: passwordVisible,
                     validator: (value) {
                       return value!.isEmpty
@@ -155,36 +142,21 @@ class _SignInState extends State<SignIn> {
                     },
                     decoration: InputDecoration(
                       hintText: "Password",
-                      prefixIcon: const Icon(Icons.lock),
+                      prefixIcon: const Icon(Icons.lock, color: AppColors.fabIconColor),
                       suffixIcon: IconButton(
-                        icon: Icon(passwordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                        onPressed: () {
-                          setState(
-                                () {
-                              passwordVisible = !passwordVisible;
-                            },
-                          );
-                        },
+                        icon: Icon(passwordVisible ? Icons.visibility : Icons.visibility_off),
+                        onPressed: () => setState(() => passwordVisible = !passwordVisible),
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   GestureDetector(
                     onTap: () {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ForgotPasswordScreen()));
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => ForgotPasswordScreen()));
                     },
                     child: Text(
                       "Forget Password?",
-                      style: TextStyle(
-                          decoration: TextDecoration.none,
-                          color: Colors.blue.shade900),
+                      style: TextStyle(decoration: TextDecoration.none, color: Colors.blue.shade900),
                     ),
                   ),
                 ],
@@ -192,39 +164,51 @@ class _SignInState extends State<SignIn> {
               Column(
                 children: [
                   GestureDetector(
-                    onTap: () {
-                      _signIn();
-                    },
-                    child: customButton(
-                      context: context,
-                      btnLabel: "Sign in",
+                    onTapDown: (_) => _animationController.reverse(),
+                    onTapUp: (_) => _animationController.forward(),
+                    onTapCancel: () => _animationController.forward(),
+                    onTap: isLoading ? null : _signIn,
+                    child: ScaleTransition(
+                      scale: _scaleAnimation,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeInOut,
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        decoration: BoxDecoration(
+                          color: isLoading ? Colors.grey : AppColors.primary,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        alignment: Alignment.center,
+                        child: isLoading
+                            ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                        )
+                            : const Text(
+                          "Sign In",
+                          style: TextStyle(color: AppColors.buttonText, fontSize: 16),
+                        ),
+                      ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 10,
-                  ),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        "Don't have an account?",
-                        style: TextStyle(fontSize: 15.5),
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
+                      const Text("Don't have an account?", style: TextStyle(fontSize: 15.5)),
+                      const SizedBox(width: 5),
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const SignUp()));
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const SignUp()));
                         },
                         child: Text(
                           "Sign up",
                           style: TextStyle(
-                              decoration: TextDecoration.underline,
-                              color: Colors.blue.shade900),
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue.shade900,
+                          ),
                         ),
                       ),
                     ],
