@@ -42,6 +42,7 @@ dependencies:
   connectivity_plus: ^5.0.2 #Check the online offline device status
   random_string: ^2.0.1 #generate random strings
   provider: ^6.1.2
+  share_plus: ^7.2.1
   #lottie: ^2.7.0 # For animation
 dev_dependencies:
   flutter_test:

@@ -9,7 +9,7 @@ Widget customButton(
   return Container(
     padding: const EdgeInsets.symmetric(vertical: 18),
     decoration: BoxDecoration(
-      color: AppColors.fabIconColor,
+      color: btnColor,
       borderRadius: BorderRadius.circular(30),
     ),
     alignment: Alignment.center,

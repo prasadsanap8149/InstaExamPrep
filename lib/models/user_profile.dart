@@ -14,7 +14,7 @@ class UserProfile {
   final int? streak;
   final SubscriptionPlan? subscriptionPlan;
   final String userRole;
-  final String gender;
+  final String? gender;
 
   UserProfile({
     this.id,
@@ -29,7 +29,7 @@ class UserProfile {
     this.subscriptionPlan,
     this.updatedOn,
     required this.userRole,
-    required this.gender,
+    this.gender,
   });
 
   // Method to convert UserProfile to a map
@@ -69,7 +69,7 @@ class UserProfile {
       streak: map['streak'] as int?,
       userRole: map['userRole'] as String,
       subscriptionPlan: map['subscriptionPlan'],
-      gender: map['gender'] as String,
+      gender: map['gender'] as String?,
     );
   }
 

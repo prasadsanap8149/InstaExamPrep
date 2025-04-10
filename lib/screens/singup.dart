@@ -24,7 +24,7 @@ class SignUp extends StatefulWidget {
   State<SignUp> createState() => _SignUpState();
 }
 
-class _SignUpState extends State<SignUp> {
+class _SignUpState extends State<SignUp>  with SingleTickerProviderStateMixin{
   final _formKey = GlobalKey<FormState>();
   Set<String> selectedTopics = {};
   String _selectedGender = 'Male';
@@ -43,6 +43,29 @@ class _SignUpState extends State<SignUp> {
       TextEditingController();
   final TextEditingController preferredLanguageEditingController =
       TextEditingController();
+
+  final List<String> genders = ['Male', 'Female', 'Other'];
+  String? selectedGender;
+
+  late final AnimationController _buttonAnimationController;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _buttonAnimationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
+      CurvedAnimation(
+        parent: _buttonAnimationController,
+        curve: Curves.easeInOut,
+      ),
+    );
+  }
+
+
 
   //Clearing memory cache
   @override
@@ -111,7 +134,7 @@ class _SignUpState extends State<SignUp> {
           mobile: mobileTextEditingController.text.trim(),
           createdOn: DateTime.timestamp(),
           userRole: Constants.userRoles[0],
-          gender: _selectedGender,
+          gender: selectedGender ?? "",
         );
         Response response = await userService.createNewUser(
             emailTextEditingController.text.trim(),
@@ -373,30 +396,47 @@ class _SignUpState extends State<SignUp> {
                       child: SingleChildScrollView(
                         scrollDirection: Axis.vertical,
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            GestureDetector(
-                              onTapDown: (_) {
-                                setState(() {
-                                  _buttonScale = 0.95;
-                                });
-                              },
+                            /*GestureDetector(
+                              onTapDown: (_) => _buttonAnimationController.forward(),
                               onTapUp: (_) {
-                                setState(() {
-                                  _buttonScale = 1.0;
-                                });
+                                _buttonAnimationController.reverse();
                                 signUp();
                               },
-                              onTapCancel: () {
-                                setState(() {
-                                  _buttonScale = 1.0;
-                                });
-                              },
-                              child: AnimatedScale(
-                                scale: _buttonScale,
-                                duration: const Duration(milliseconds: 100),
+                              onTapCancel: () => _buttonAnimationController.reverse(),
+                              child: Transform.scale(
+                                scale: _scaleAnimation.value,
                                 child: customButton(
                                   context: context,
                                   btnLabel: "Sign up",
+                                ),
+                              ),
+                            ),*/
+                            ElevatedButton(
+                              onPressed: isLoading ? null : signUp,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppColors.primary,
+                                disabledBackgroundColor: Colors.grey,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                              ),
+                              child: isLoading
+                                  ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                                  : const Text(
+                                "Sign Up",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: AppColors.buttonText,
                                 ),
                               ),
                             ),
