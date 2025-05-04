@@ -5,8 +5,10 @@ import 'package:smartexamprep/database/firebase_service.dart';
 import 'package:smartexamprep/models/quiz.dart';
 import 'package:smartexamprep/screens/question_form.dart';
 
+import '../helper/app_colors.dart';
 import '../helper/constants.dart';
 import '../helper/helper_functions.dart';
+import '../widgets/animated_custom_button.dart';
 import '../widgets/custom_button.dart';
 
 class CreateQuiz extends StatefulWidget {
@@ -78,9 +80,9 @@ class _CreateQuizState extends State<CreateQuiz> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => AddQuestionsDynamic(
-                                userId: widget.userId,
-                              quizId:quizId
-                              ) //DynamicQuestionForm(userId: widget.userId, quiz: quiz),
+                              userId: widget.userId,
+                              quizId:
+                                  quizId) //DynamicQuestionForm(userId: widget.userId, quiz: quiz),
                           ),
                     );
                   })
@@ -118,8 +120,7 @@ class _CreateQuizState extends State<CreateQuiz> {
                     Column(
                       children: [
                         Text(
-                          "Create ${widget.topic} Quiz"
-                              ,
+                          "Create ${widget.topic} Quiz",
                           style: const TextStyle(
                               fontSize: 30,
                               fontWeight: FontWeight.bold,
@@ -388,29 +389,21 @@ class _CreateQuizState extends State<CreateQuiz> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        GestureDetector(
-                          onTap: () {
-                            submitQuizForm();
-                          },
-                          child: customButton(
-                            btnLabel: "Create",
-                            context: context,
-                            btnWidth:
-                                MediaQuery.of(context).size.width * 0.3855,
-                          ),
+                        AnimatedCustomButton(
+                          btnLabel: "Submit",
+                          btnColor: AppColors.accent,
+                          onTap: submitQuizForm,
+                          btnWidth: MediaQuery.of(context).size.width * 0.4,
                         ),
-                        GestureDetector(
+                        AnimatedCustomButton(
+                          btnLabel: "Cancel",
+                          btnColor: AppColors.buttonDanger,
                           onTap: () {
                             Navigator.pop(context);
                           },
-                          child: customButton(
-                            btnLabel: "Cancel",
-                            context: context,
-                            btnColor: Colors.blueGrey,
-                            btnWidth:
-                                MediaQuery.of(context).size.width * 0.3855,
-                          ),
+                          btnWidth: MediaQuery.of(context).size.width * 0.4,
                         ),
+
                       ],
                     )
                   ],

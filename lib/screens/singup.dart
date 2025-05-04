@@ -14,7 +14,6 @@ import '../database/firebase_service.dart';
 import '../helper/helper_functions.dart';
 import '../models/response.dart';
 import '../widgets/app_bar.dart';
-import '../widgets/custom_button.dart';
 import 'home_screen.dart';
 
 class SignUp extends StatefulWidget {
@@ -24,11 +23,10 @@ class SignUp extends StatefulWidget {
   State<SignUp> createState() => _SignUpState();
 }
 
-class _SignUpState extends State<SignUp>  with SingleTickerProviderStateMixin{
+class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   Set<String> selectedTopics = {};
   String _selectedGender = 'Male';
-  double _buttonScale = 1.0;
   final TextEditingController nameTextEditingController =
       TextEditingController();
   final TextEditingController emailTextEditingController =
@@ -47,25 +45,10 @@ class _SignUpState extends State<SignUp>  with SingleTickerProviderStateMixin{
   final List<String> genders = ['Male', 'Female', 'Other'];
   String? selectedGender;
 
-  late final AnimationController _buttonAnimationController;
-  late Animation<double> _scaleAnimation;
-
   @override
   void initState() {
     super.initState();
-    _buttonAnimationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 200),
-    );
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 0.95).animate(
-      CurvedAnimation(
-        parent: _buttonAnimationController,
-        curve: Curves.easeInOut,
-      ),
-    );
   }
-
-
 
   //Clearing memory cache
   @override
@@ -144,19 +127,24 @@ class _SignUpState extends State<SignUp>  with SingleTickerProviderStateMixin{
         if (response.statusCode == ApiConstants.success) {
           var user = await firebaseService.signInEmailAndPass(
               emailTextEditingController.text.trim(),
-              passwordTextEditingController.text.trim(),context);
+              passwordTextEditingController.text.trim(),
+              context);
 
           if (user != null) {
             if (kDebugMode) {
               print('Sign up user details:${user.userResponse.toString()}');
             }
-            UserProfile userProfile= await firebaseService.getUserDetails(userId: user.userResponse!.uid);
+            UserProfile userProfile = await firebaseService.getUserDetails(
+                userId: user.userResponse!.uid);
             await LocalStorage.saveUserLoggedInDetails(
-                isLoggedIn: true, userId: userProfile.id!,userProfile: userProfile);
+                isLoggedIn: true,
+                userId: userProfile.id!,
+                userProfile: userProfile);
 
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => HomeScreen(userProfile: userProfile)),
+              MaterialPageRoute(
+                  builder: (context) => HomeScreen(userProfile: userProfile)),
             );
           }
         }
@@ -165,7 +153,6 @@ class _SignUpState extends State<SignUp>  with SingleTickerProviderStateMixin{
               context: context,
               message: response.message,
               color: Colors.redAccent);
-
         }
         setState(() {
           isLoading = false;
@@ -177,7 +164,6 @@ class _SignUpState extends State<SignUp>  with SingleTickerProviderStateMixin{
         if (kDebugMode) {
           print("Exception::${e.toString()}");
         }
-
       }
     }
   }
@@ -225,7 +211,10 @@ class _SignUpState extends State<SignUp>  with SingleTickerProviderStateMixin{
                               controller: nameTextEditingController,
                               decoration: const InputDecoration(
                                 hintText: "Name",
-                                prefixIcon: Icon(Icons.person,color: AppColors.fabIconColor,),
+                                prefixIcon: Icon(
+                                  Icons.person,
+                                  color: AppColors.fabIconColor,
+                                ),
                               ),
                             ),
                             SizedBox(
@@ -241,7 +230,10 @@ class _SignUpState extends State<SignUp>  with SingleTickerProviderStateMixin{
                               },
                               decoration: const InputDecoration(
                                 hintText: "Email",
-                                prefixIcon: Icon(Icons.email,color: AppColors.fabIconColor,),
+                                prefixIcon: Icon(
+                                  Icons.email,
+                                  color: AppColors.fabIconColor,
+                                ),
                               ),
                               controller: emailTextEditingController,
                             ),
@@ -259,7 +251,10 @@ class _SignUpState extends State<SignUp>  with SingleTickerProviderStateMixin{
                               ),
                               decoration: const InputDecoration(
                                 hintText: "Mobile",
-                                prefixIcon: Icon(Icons.call,color: AppColors.fabIconColor,),
+                                prefixIcon: Icon(
+                                  Icons.call,
+                                  color: AppColors.fabIconColor,
+                                ),
                               ),
                               controller: mobileTextEditingController,
                             ),
@@ -279,7 +274,10 @@ class _SignUpState extends State<SignUp>  with SingleTickerProviderStateMixin{
                               ),
                               decoration: const InputDecoration(
                                 hintText: "Language",
-                                prefixIcon: Icon(Icons.language,color: AppColors.fabIconColor,),
+                                prefixIcon: Icon(
+                                  Icons.language,
+                                  color: AppColors.fabIconColor,
+                                ),
                               ),
                               controller: preferredLanguageController,
                             ),
@@ -300,7 +298,10 @@ class _SignUpState extends State<SignUp>  with SingleTickerProviderStateMixin{
                               },
                               decoration: const InputDecoration(
                                 hintText: "Password",
-                                prefixIcon: Icon(Icons.lock,color: AppColors.fabIconColor,),
+                                prefixIcon: Icon(
+                                  Icons.lock,
+                                  color: AppColors.fabIconColor,
+                                ),
                               ),
                               controller: passwordTextEditingController,
                             ),
@@ -321,9 +322,10 @@ class _SignUpState extends State<SignUp>  with SingleTickerProviderStateMixin{
                               },
                               decoration: InputDecoration(
                                 hintText: "Re-Password",
-
-                                prefixIcon:  const Icon(
-                                  Icons.lock,color: AppColors.fabIconColor,),
+                                prefixIcon: const Icon(
+                                  Icons.lock,
+                                  color: AppColors.fabIconColor,
+                                ),
                                 suffixIcon: IconButton(
                                   icon: Icon(passwordVisible
                                       ? Icons.visibility
@@ -341,7 +343,8 @@ class _SignUpState extends State<SignUp>  with SingleTickerProviderStateMixin{
                             ),
                             const Text(
                               'Select Gender',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -369,7 +372,6 @@ class _SignUpState extends State<SignUp>  with SingleTickerProviderStateMixin{
                               ],
                             ),
                             const SizedBox(height: 10),
-
                             const Text(
                               'Select your quiz interest',
                               style: TextStyle(
@@ -398,21 +400,6 @@ class _SignUpState extends State<SignUp>  with SingleTickerProviderStateMixin{
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            /*GestureDetector(
-                              onTapDown: (_) => _buttonAnimationController.forward(),
-                              onTapUp: (_) {
-                                _buttonAnimationController.reverse();
-                                signUp();
-                              },
-                              onTapCancel: () => _buttonAnimationController.reverse(),
-                              child: Transform.scale(
-                                scale: _scaleAnimation.value,
-                                child: customButton(
-                                  context: context,
-                                  btnLabel: "Sign up",
-                                ),
-                              ),
-                            ),*/
                             ElevatedButton(
                               onPressed: isLoading ? null : signUp,
                               style: ElevatedButton.styleFrom(
@@ -421,26 +408,26 @@ class _SignUpState extends State<SignUp>  with SingleTickerProviderStateMixin{
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 14),
                               ),
                               child: isLoading
                                   ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 2,
+                                      ),
+                                    )
                                   : const Text(
-                                "Sign Up",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: AppColors.buttonText,
-                                ),
-                              ),
+                                      "Sign Up",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: AppColors.buttonText,
+                                      ),
+                                    ),
                             ),
-
                             const SizedBox(
                               height: 10,
                             ),

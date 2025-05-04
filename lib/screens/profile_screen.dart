@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:smartexamprep/helper/app_colors.dart';
 import 'package:smartexamprep/models/user_profile.dart';
 import 'package:smartexamprep/utils/utils.dart';
 
 import '../helper/helper_functions.dart';
-import '../widgets/app_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
   final UserProfile profileDetails;
@@ -135,22 +133,18 @@ class _ProfileState extends State<ProfileScreen> {
                       ),
                     ),
                     const SizedBox(height: 30),
-
                     _buildProfileInfoRow(Icons.email, 'Email',
                         widget.profileDetails.email.toString()),
-
                     _buildProfileInfoRow(Icons.person, 'Name',
                         widget.profileDetails.name.toString()),
-
                     _buildProfileInfoRow(Icons.phone, 'Mobile',
                         widget.profileDetails.mobile.toString()),
-
+                    if(widget.profileDetails.gender != null)_buildProfileInfoRow(Icons.person_outline, 'Gender',
+                         widget.profileDetails.gender.toString()),
                     _buildProfileInfoRow(Icons.account_box, 'Role',
                         widget.profileDetails.userRole.toString()),
-
                     _buildProfileInfoRow(Icons.calendar_today, 'Joined',
                         utils.formatDateTime(widget.profileDetails.createdOn)),
-
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -160,12 +154,16 @@ class _ProfileState extends State<ProfileScreen> {
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
             child: ElevatedButton.icon(
-              icon: const Icon(Icons.arrow_back,color: AppColors.fabIconColor,),
+              icon: const Icon(
+                Icons.arrow_back,
+                color: AppColors.fabIconColor,
+              ),
               label: const Text('Back'),
               style: ElevatedButton.styleFrom(
                 foregroundColor: AppColors.fabIconColor,
                 backgroundColor: AppColors.fabBackground,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
@@ -213,7 +211,10 @@ class _ProfileState extends State<ProfileScreen> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color:AppColors.fabBackground,),
+          Icon(
+            icon,
+            color: AppColors.fabBackground,
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -242,5 +243,4 @@ class _ProfileState extends State<ProfileScreen> {
       ),
     );
   }
-
 }

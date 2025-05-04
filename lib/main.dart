@@ -153,9 +153,30 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return const MaterialApp(
-        home: Center(child: CircularProgressIndicator()),
+        debugShowCheckedModeBanner: false,
+        home: Scaffold(
+          backgroundColor: Colors.white, // or any themed color
+          body: SafeArea(
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children:  [
+                  CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue), // use theme color
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Loading, please wait...',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       );
     }
+
 
     if (!_isOnline) {
       return MaterialApp(
@@ -175,7 +196,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: '',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
         useMaterial3: true,
       ),
       home: _isUserLoggedIn
