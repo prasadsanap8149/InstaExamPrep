@@ -18,26 +18,26 @@ class UserService {
     }
     if (firebaseResponse?.statusCode == ApiConstants.success) {
       UserProfile localUserProfile = UserProfile(
-        id: firebaseResponse?.userResponse?.uid,
-        name: userProfile.name,
-        email: userProfile.email,
-        selectedTopics: userProfile.selectedTopics,
-        preferredLanguage: userProfile.preferredLanguage,
-        mobile: userProfile.mobile,
-        createdOn: userProfile.createdOn,
-        userRole: Constants.userRoles[0],
-        gender: userProfile.gender
-      );
+          id: firebaseResponse?.userResponse?.uid,
+          name: userProfile.name,
+          email: userProfile.email,
+          selectedTopics: userProfile.selectedTopics,
+          preferredLanguage: userProfile.preferredLanguage,
+          mobile: userProfile.mobile,
+          createdOn: userProfile.createdOn,
+          userRole: Constants.userRoles[0],
+          gender: userProfile.gender);
       if (kDebugMode) {
         print("Data ::${localUserProfile.toString()}");
       }
 
-      var firebaseResponse2 = await firebaseService.saveUserProfile(userProfile: localUserProfile);
-      if(firebaseResponse2.statusCode==ApiConstants.success) {
+      var firebaseResponse2 =
+          await firebaseService.saveUserProfile(userProfile: localUserProfile);
+      if (firebaseResponse2.statusCode == ApiConstants.success) {
         return Response(
             statusCode: ApiConstants.success,
             message: Constants.accountCreated);
-      }else{
+      } else {
         return Response(
             statusCode: ApiConstants.fail,
             message: Constants.accountNotCreated);

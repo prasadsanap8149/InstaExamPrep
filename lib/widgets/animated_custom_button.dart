@@ -20,7 +20,8 @@ class AnimatedCustomButton extends StatefulWidget {
   _AnimatedCustomButtonState createState() => _AnimatedCustomButtonState();
 }
 
-class _AnimatedCustomButtonState extends State<AnimatedCustomButton> with SingleTickerProviderStateMixin {
+class _AnimatedCustomButtonState extends State<AnimatedCustomButton>
+    with SingleTickerProviderStateMixin {
   double _scale = 1.0;
 
   void _onTapDown(TapDownDetails details) {

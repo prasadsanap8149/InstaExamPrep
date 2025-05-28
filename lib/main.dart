@@ -127,7 +127,7 @@ class _MyAppState extends State<MyApp> {
       }
 
       final user =
-      await firebaseService.getUserDetails(userId: userLoginIdDetails!);
+          await firebaseService.getUserDetails(userId: userLoginIdDetails!);
       await LocalStorage.saveUserLoggedInDetails(
         isLoggedIn: true,
         userId: user.id!,
@@ -145,7 +145,6 @@ class _MyAppState extends State<MyApp> {
       if (kDebugMode) {
         print("Error fetching user details: $error");
       }
-
     }
   }
 
@@ -160,9 +159,10 @@ class _MyAppState extends State<MyApp> {
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children:  [
+                children: [
                   CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue), // use theme color
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        Colors.blue), // use theme color
                   ),
                   SizedBox(height: 20),
                   Text(
@@ -176,7 +176,6 @@ class _MyAppState extends State<MyApp> {
         ),
       );
     }
-
 
     if (!_isOnline) {
       return MaterialApp(
@@ -201,12 +200,11 @@ class _MyAppState extends State<MyApp> {
       ),
       home: _isUserLoggedIn
           ? (userProfile != null
-          ? HomeScreen(userProfile: userProfile!)
-          : const Center(
-        child:  SignUp(),
-      ))
+              ? HomeScreen(userProfile: userProfile!)
+              : const Center(
+                  child: SignUp(),
+                ))
           : const SignUp(),
     );
   }
 }
-

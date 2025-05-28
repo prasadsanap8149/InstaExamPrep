@@ -3,9 +3,9 @@ import "package:smartexamprep/helper/app_colors.dart";
 
 Widget customButton(
     {required BuildContext context,
-      required String btnLabel,
-      btnWidth,
-      btnColor}) {
+    required String btnLabel,
+    btnWidth,
+    btnColor}) {
   return Container(
     padding: const EdgeInsets.symmetric(vertical: 18),
     decoration: BoxDecoration(

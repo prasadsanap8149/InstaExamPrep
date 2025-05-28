@@ -139,8 +139,9 @@ class _ProfileState extends State<ProfileScreen> {
                         widget.profileDetails.name.toString()),
                     _buildProfileInfoRow(Icons.phone, 'Mobile',
                         widget.profileDetails.mobile.toString()),
-                    if(widget.profileDetails.gender != null)_buildProfileInfoRow(Icons.person_outline, 'Gender',
-                         widget.profileDetails.gender.toString()),
+                    if (widget.profileDetails.gender != null)
+                      _buildProfileInfoRow(Icons.person_outline, 'Gender',
+                          widget.profileDetails.gender.toString()),
                     _buildProfileInfoRow(Icons.account_box, 'Role',
                         widget.profileDetails.userRole.toString()),
                     _buildProfileInfoRow(Icons.calendar_today, 'Joined',
@@ -154,21 +155,18 @@ class _ProfileState extends State<ProfileScreen> {
           Padding(
             padding: const EdgeInsets.only(bottom: 16.0),
             child: ElevatedButton.icon(
-              icon: const Icon(
-                Icons.arrow_back,
-                color: AppColors.fabIconColor,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.arrow_back, color: AppColors.fabIconColor),
+              label: const Text(
+                'Back',
+                style: TextStyle(color: AppColors.buttonText),
               ),
-              label: const Text('Back'),
               style: ElevatedButton.styleFrom(
-                foregroundColor: AppColors.fabIconColor,
-                backgroundColor: AppColors.fabBackground,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              onPressed: () => Navigator.pop(context),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
+                  backgroundColor: AppColors.fabBackground),
             ),
           ),
         ],

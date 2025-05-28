@@ -8,8 +8,8 @@ class AuthResponse {
   final DateTime? lastSignInTime;
 
   AuthResponse({
-     this.userId,
-     this.email,
+    this.userId,
+    this.email,
     this.displayName,
     this.photoUrl,
     this.emailVerified = false,
@@ -24,8 +24,12 @@ class AuthResponse {
       displayName: map['displayName'] as String?,
       photoUrl: map['photoURL'] as String?,
       emailVerified: map['emailVerified'] as bool? ?? false,
-      creationTime: map['metadata'] != null ? DateTime.tryParse(map['metadata']['creationTime'] as String) : null,
-      lastSignInTime: map['metadata'] != null ? DateTime.tryParse(map['metadata']['lastSignInTime'] as String) : null,
+      creationTime: map['metadata'] != null
+          ? DateTime.tryParse(map['metadata']['creationTime'] as String)
+          : null,
+      lastSignInTime: map['metadata'] != null
+          ? DateTime.tryParse(map['metadata']['lastSignInTime'] as String)
+          : null,
     );
   }
 

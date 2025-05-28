@@ -9,6 +9,7 @@ import '../helper/app_colors.dart';
 import '../helper/constants.dart';
 import '../utils/validator_util.dart';
 import '../widgets/app_bar.dart';
+import '../widgets/custom_text_form_field.dart';
 import 'forgot_password.dart';
 import 'home_screen.dart';
 
@@ -91,7 +92,7 @@ class _SignInState extends State<SignIn> with SingleTickerProviderStateMixin {
           }
         }
 
-       /* if (user != null) {
+        /* if (user != null) {
           final userProfile = await firebaseService.getUserDetails(
             userId: user.userResponse!.uid,
           );
@@ -147,6 +148,173 @@ class _SignInState extends State<SignIn> with SingleTickerProviderStateMixin {
         systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Center(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      const Center(
+                        child: Text(
+                          "Welcome Back!",
+                          style: TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.accent,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            buildTextField(
+                              controller: emailTextEditingController,
+                              hintText: "Email",
+                              icon: Icons.email,
+                              validator: validatorService.validateEmail,
+                            ),
+                            const SizedBox(height: 16),
+                            buildTextField(
+                              controller: passwordTextEditingController,
+                              hintText: "Password",
+                              icon: Icons.lock,
+                              obscureText: passwordVisible,
+                              suffixIcon: IconButton(
+                                icon: Icon(passwordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off),
+                                onPressed: () {
+                                  setState(() {
+                                    passwordVisible = !passwordVisible;
+                                  });
+                                },
+                              ),
+                              validator: (value) => value!.isEmpty
+                                  ? Constants.passwordMessage
+                                  : value.length < 6
+                                      ? Constants.passwordLengthMessage
+                                      : null,
+                            ),
+                            const SizedBox(height: 10),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const ForgotPasswordScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Text(
+                                  "Forget Password?",
+                                  style: TextStyle(
+                                    color: Colors.blue.shade900,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            ScaleTransition(
+                              scale: _scaleAnimation,
+                              child: ElevatedButton(
+                                onPressed: isLoading ? null : _signIn,
+                                style: ElevatedButton.styleFrom(
+                                  minimumSize: const Size.fromHeight(48),
+                                  backgroundColor: AppColors.buttonBackground,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                child: isLoading
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Text(
+                                        "Sign In",
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: AppColors.buttonText),
+                                      ),
+                              ),
+                              /*ElevatedButton(
+                                onPressed: isLoading ? null : _signIn,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  disabledBackgroundColor: Colors.grey,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  minimumSize: const Size.fromHeight(50),
+                                ),
+                                child: isLoading
+                                    ? const SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          color: Colors.white,
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Text(
+                                        "Sign In",
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: AppColors.buttonText,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                              ),*/
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text("Don't have an account?",
+                              style: TextStyle(fontSize: 15.5)),
+                          const SizedBox(width: 6),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const SignUp()),
+                              );
+                            },
+                            child: Text(
+                              "Sign Up",
+                              style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                color: Colors.blue.shade900,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+      /* body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : Form(
               key: _formKey,
@@ -270,7 +438,7 @@ class _SignInState extends State<SignIn> with SingleTickerProviderStateMixin {
                   ],
                 ),
               ),
-            ),
+            ),*/
     );
   }
 }

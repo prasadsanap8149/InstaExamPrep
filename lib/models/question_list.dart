@@ -7,13 +7,12 @@ class QuestionsList {
   String? explanation;
   String? userId;
 
-  QuestionsList({
-    this.language,
-    this.content,
-    this.options,
-    this.explanation,
-    this.userId
-  });
+  QuestionsList(
+      {this.language,
+      this.content,
+      this.options,
+      this.explanation,
+      this.userId});
 
   QuestionsList.fromJson(Map<String, dynamic> json) {
     language = json['language'];
@@ -46,7 +45,9 @@ class QuestionsList {
       language: map['language'],
       content: map['content'],
       options: map['options'] != null
-          ? (map['options'] as List).map((item) => Options.fromMap(item)).toList()
+          ? (map['options'] as List)
+              .map((item) => Options.fromMap(item))
+              .toList()
           : null,
       explanation: map['explanation'],
       userId: map['userId'],

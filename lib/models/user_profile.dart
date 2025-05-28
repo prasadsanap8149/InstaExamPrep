@@ -1,6 +1,5 @@
 import 'package:smartexamprep/models/subscription_plan.dart';
 
-
 class UserProfile {
   final String? id;
   final String name;
@@ -47,7 +46,8 @@ class UserProfile {
       'streak': streak,
       'userRole': userRole,
       'gender': gender,
-      'subscriptionPlan': subscriptionPlan?.toString(), // Convert enum to string if applicable
+      'subscriptionPlan':
+          subscriptionPlan?.toString(), // Convert enum to string if applicable
     };
   }
 
@@ -61,10 +61,13 @@ class UserProfile {
       name: map['name'] as String,
       email: map['email'] as String,
       mobile: map['mobile'] as String,
-      selectedTopics: (map['selectedTopics'] as List<dynamic>).cast<String>().toSet(),
+      selectedTopics:
+          (map['selectedTopics'] as List<dynamic>).cast<String>().toSet(),
       preferredLanguage: map['preferredLanguage'] as String,
       createdOn: DateTime.parse(map['createdOn'] as String),
-      updatedOn: map['updatedOn'] != null ? DateTime.parse(map['updatedOn'] as String) : null,
+      updatedOn: map['updatedOn'] != null
+          ? DateTime.parse(map['updatedOn'] as String)
+          : null,
       points: map['points'] as int?,
       streak: map['streak'] as int?,
       userRole: map['userRole'] as String,
@@ -74,7 +77,8 @@ class UserProfile {
   }
 
   // Convert JSON to UserProfile
-  factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile.fromMap(json);
+  factory UserProfile.fromJson(Map<String, dynamic> json) =>
+      UserProfile.fromMap(json);
 
   @override
   String toString() {
@@ -84,4 +88,3 @@ class UserProfile {
         'streak: $streak, userRole: $userRole, subscriptionPlan: $subscriptionPlan)';
   }
 }
-

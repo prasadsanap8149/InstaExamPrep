@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smartexamprep/database/firebase_service.dart';
@@ -12,6 +13,7 @@ import '../helper/confirmation_messages.dart';
 import '../helper/constants.dart';
 import '../helper/helper_functions.dart';
 import '../widgets/app_bar.dart';
+import 'create_quiz_category.dart';
 
 class HomeScreen extends StatefulWidget {
   final UserProfile userProfile;
@@ -23,30 +25,23 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late List<String> selectedTopicsList;
   late UserProfile userProfile;
 
   @override
   void initState() {
     super.initState();
-    selectedTopicsList = widget.userProfile.selectedTopics.toList();
     userProfile = widget.userProfile;
   }
 
   Future<void> _refreshTopics() async {
     // Simulate data fetch or refresh logic
     await Future.delayed(const Duration(seconds: 2));
-
     // Fetch updated user profile
     UserProfile? updatedProfile =
         await firebaseService.getUserDetails(userId: userProfile.id!);
-
     debugPrint("Refreshed User Profile: ${updatedProfile.toString()}");
-
     setState(() {
       userProfile = updatedProfile; // Assign the updated profile
-      selectedTopicsList =
-          userProfile.selectedTopics.toList(); // Update the topic list
     });
   }
 
@@ -77,17 +72,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Separate active and inactive topics
-    final List<String> activeTopics = Constants.topicNames
-        .where((topic) => selectedTopicsList.contains(topic))
-        .toList();
-    final List<String> inactiveTopics = Constants.topicNames
-        .where((topic) => !selectedTopicsList.contains(topic))
-        .toList();
-
-    // Combine active topics followed by inactive topics
-    final List<String> orderedTopics = [...activeTopics, ...inactiveTopics];
-
     return PopScope(
       canPop: false,
       onPopInvoked: (bool didPop) async {
@@ -112,7 +96,10 @@ class _HomeScreenState extends State<HomeScreen> {
           systemOverlayStyle: SystemUiOverlayStyle.dark,
           actions: [
             IconButton(
-              icon: const Icon(Icons.account_circle,color: AppColors.fabIconColor,),
+              icon: const Icon(
+                Icons.account_circle,
+                color: AppColors.fabIconColor,
+              ),
               color: AppColors.appBarIcon,
               tooltip: "Profile",
               onPressed: () {
@@ -126,7 +113,10 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
             IconButton(
-              icon: const Icon(Icons.logout,color: AppColors.fabIconColor,),
+              icon: const Icon(
+                Icons.logout,
+                color: AppColors.fabIconColor,
+              ),
               color: AppColors.appBarIcon,
               tooltip: "Logout",
               onPressed: () {
@@ -137,139 +127,160 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         body: RefreshIndicator(
           onRefresh: _refreshTopics,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: GridView.builder(
-                physics: const AlwaysScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  childAspectRatio: 3 / 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                ),
-                itemCount: orderedTopics.length,
-                itemBuilder: (context, index) {
-                  final topic = orderedTopics[index];
-                  final isActive = selectedTopicsList.contains(topic);
+          // You can still define a refresh action (like clearing a local cache)
+          child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: firebaseService.getQuizTypeDetailsStream(widget.userProfile.userRole == Constants.userRoles[0]
+                ? false
+                : true),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                  return Card(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return const Center(child: Text("No quiz types available."));
+              }
+
+              final orderedTopics = snapshot.data!.docs
+                  .map((doc) => doc['title'].toString())
+                  .toList();
+
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: GridView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: orderedTopics.length,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      childAspectRatio: 3 / 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
                     ),
-                    color: AppColors.cardPrimary,
-                    //isActive ? Colors.green.shade100 : Colors.green[800],
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          topic,
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            color: AppColors.accent,),
+                    itemBuilder: (context, index) {
+                      final topic = orderedTopics[index];
+                      return Card(
+                        elevation: 4,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        if (isActive)
-                          ElevatedButton(
-                            onPressed: () async {
-                              //Add here to navigate quiz the selected quiz home
-                              debugPrint("Navigate quiz click: $topic");
-                              Navigator.push(
+                        color: AppColors.cardPrimary,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              topic,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.accent,
+                              ),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                debugPrint("Navigate quiz click: $topic");
+                                Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => QuizHome(
-                                          quizTitle: topic,
-                                          userProfile: widget.userProfile)));
-
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                            ),
-                            child: const Text(
-                              'Open',
-                              style: TextStyle(color: AppColors.iconPrimary),
-                            ),
+                                    builder: (context) => QuizHome(
+                                      quizTitle: topic,
+                                      userProfile: widget.userProfile,
+                                    ),
+                                  ),
+                                );
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                              ),
+                              child: const Text(
+                                'Open',
+                                style: TextStyle(color: AppColors.iconPrimary),
+                              ),
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        floatingActionButton:
+            widget.userProfile.userRole.toString() == Constants.userRoles[0]
+                ? null
+                : FloatingActionButton(
+                    tooltip: "Add new quiz type.",
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CreateQuizType(
+                            userProfile: widget.userProfile,
+                            quizTypeId: '',
                           ),
-                        if (!isActive)
-                          ElevatedButton(
-                            onPressed: () async {
-                              // Add topic to selectedTopicsList and update database
-                              setState(() {
-                                selectedTopicsList.add(topic);
-                              });
-
-                              // await firebaseService.updateUserTopics(
-                              //   userId: userProfile.id!,
-                              //   updatedTopics: selectedTopicsList,
-                              // );
-
-                              debugPrint("Added topic: $topic");
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.blueGrey,
-                            ),
-                            child: const Text(
-                              'Add',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                      ],
+                        ),
+                      );
+                    },
+                    backgroundColor: AppColors.fabBackground,
+                    // custom background color
+                    foregroundColor: AppColors.fabIconColor,
+                    // custom icon color if needed
+                    child: const Icon(
+                      Icons.add,
+                      color: AppColors.appBarIcon,
+                    ),
+                  ),
+        /*floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
+        floatingActionButton: widget.userProfile.userRole ==
+                Constants.userRoles[0]
+            ? null
+            : InkWell(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          ExcelReaderScreen(userId: widget.userProfile.id!),
                     ),
                   );
                 },
-              ),
-            ),
-          ),
-        ),
-        // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        // floatingActionButtonAnimator: FloatingActionButtonAnimator.scaling,
-        // floatingActionButton: widget.userProfile.userRole ==
-        //         Constants.userRoles[0]
-        //     ? null
-        //     : InkWell(
-        //         onTap: () {
-        //           Navigator.push(
-        //             context,
-        //             MaterialPageRoute(
-        //               builder: (context) =>
-        //                   CreateQuizRoom(userId: widget.userProfile.id!),
-        //             ),
-        //           );
-        //         },
-        //         child: Container(
-        //           padding:
-        //               const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        //           decoration: BoxDecoration(
-        //             color: Colors.blueAccent,
-        //             borderRadius: BorderRadius.circular(12),
-        //             boxShadow: const [
-        //               BoxShadow(
-        //                 color: Colors.black26,
-        //                 blurRadius: 8,
-        //                 offset: Offset(2, 4),
-        //               ),
-        //             ],
-        //           ),
-        //           child: const Row(
-        //             mainAxisSize: MainAxisSize.min,
-        //             children: [
-        //               Icon(Icons.add_circle_outline, color: Colors.white),
-        //               SizedBox(width: 8),
-        //               Text(
-        //                 'Create Room',
-        //                 style: TextStyle(
-        //                   fontSize: 16,
-        //                   fontWeight: FontWeight.bold,
-        //                   color: Colors.white,
-        //                 ),
-        //               ),
-        //             ],
-        //           ),
-        //         ),
-        //       ),
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.blueAccent,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 8,
+                        offset: Offset(2, 4),
+                      ),
+                    ],
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.add_circle_outline, color: Colors.white),
+                      SizedBox(width: 8),
+                      Text(
+                        'Create Room',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),*/
       ),
     );
   }

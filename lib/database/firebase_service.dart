@@ -11,7 +11,6 @@ import 'package:smartexamprep/models/user_profile.dart';
 import '../helper/api_constants.dart';
 import '../helper/constants.dart';
 
-
 class FirebaseService {
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final FirebaseFirestore firebaseInstance = FirebaseFirestore.instance;
@@ -80,13 +79,13 @@ class FirebaseService {
             ErrorResponse(errorCode: e.code, errorMessage: errorMessage);
       }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(errorMessage.toString()),
-            // Ensure the error message is shown
-            backgroundColor: Colors.red,
-          ),
-        );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage.toString()),
+          // Ensure the error message is shown
+          backgroundColor: Colors.red,
+        ),
+      );
 
       return FirebaseResponse(
           errorResponse: errorResponse,
@@ -145,8 +144,7 @@ class FirebaseService {
   // Example method to save a user profile to Firebase
   Future<FirebaseResponse> saveUserProfile(
       {required UserProfile userProfile}) async {
-    final collection =
-    firebaseInstance.collection(Constants.userCollection);
+    final collection = firebaseInstance.collection(Constants.userCollection);
 
     try {
       await collection
@@ -184,6 +182,62 @@ class FirebaseService {
         .get();
     return UserProfile.fromMap(docSnapshot.data() as Map<String, dynamic>);
   }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getQuizTypeDetailsStream(bool userFlag) {
+    if(userFlag){
+      return firebaseInstance.collection(Constants.quizTypeCollection).snapshots();
+    }
+    return firebaseInstance.collection(Constants.quizTypeCollection).where('status', isEqualTo: true).snapshots();
+  }
+
+  Future<void> saveOrUpdateQuizType({
+    required String title,
+    required bool status,
+    required String quizTypeId,
+    required String userId,
+  }) async {
+    try {
+      final collectionRef = firebaseInstance.collection(Constants.quizTypeCollection);
+
+      if (quizTypeId.isNotEmpty) {
+        // Updating existing document
+        final docRef = collectionRef.doc(quizTypeId);
+        final docSnapshot = await docRef.get();
+
+        if (docSnapshot.exists) {
+          await docRef.update({
+            'title': title.toUpperCase(),
+            'status': status,
+            'updatedBy': userId,
+            'updatedOn': DateTime.now(),
+          });
+        } else {
+          // If ID is provided but document doesn't exist, create it
+          await docRef.set({
+            'title': title.toUpperCase(),
+            'status': status,
+            'createdBy': userId,
+            'createdDate': DateTime.now(),
+          });
+        }
+      } else {
+        // Creating new document with auto-generated ID
+        await collectionRef.add({
+          'title': title,
+          'status': status,
+          'createdBy': userId,
+          'createdDate': DateTime.now(),
+        });
+      }
+
+      debugPrint('Quiz Type saved or updated successfully.');
+    } catch (e) {
+      debugPrint('Error saving or updating Quiz Type: $e');
+    }
+  }
+
+
+
 
   Future<void> addQuizData(Map<String, dynamic> quizData, String quizId) async {
     await firebaseInstance
@@ -279,19 +333,24 @@ class FirebaseService {
     }
   }
 
-  Future<void> deleteRecord(String quizId,String questionId) async {
+  Future<void> deleteRecord(String quizId, String questionId) async {
     try {
-
       // Check if the document exists
-      DocumentSnapshot docSnapshot = await firebaseInstance. collection(Constants.quizCollection)
-        .doc(quizId)
-        .collection(Constants.queAndAnsCollection).doc(questionId).get();
+      DocumentSnapshot docSnapshot = await firebaseInstance
+          .collection(Constants.quizCollection)
+          .doc(quizId)
+          .collection(Constants.queAndAnsCollection)
+          .doc(questionId)
+          .get();
 
       if (docSnapshot.exists) {
         // If the document exists, delete it
-        await firebaseInstance. collection(Constants.quizCollection)
+        await firebaseInstance
+            .collection(Constants.quizCollection)
             .doc(quizId)
-            .collection(Constants.queAndAnsCollection).doc(questionId).delete();
+            .collection(Constants.queAndAnsCollection)
+            .doc(questionId)
+            .delete();
         debugPrint('Document successfully deleted!');
       } else {
         // If the document doesn't exist
@@ -303,6 +362,30 @@ class FirebaseService {
     }
   }
 
+  deleteQuizTypeRecord(String docId)  async {
+    try {
+      // Check if the document exists
+      DocumentSnapshot docSnapshot = await firebaseInstance
+          .collection(Constants.quizTypeCollection)
+          .doc(docId)
+          .get();
+
+      if (docSnapshot.exists) {
+        // If the document exists, delete it
+        await firebaseInstance
+            .collection(Constants.quizTypeCollection)
+            .doc(docId)
+            .delete();
+        debugPrint('Document successfully deleted!');
+      } else {
+        // If the document doesn't exist
+        debugPrint('Document with ID $docId does not exist.');
+      }
+    } catch (e) {
+      // Handle any errors that occur during the deletion process
+      debugPrint('Error deleting document: $e');
+    }
+  }
 }
 
 final FirebaseService firebaseService = FirebaseService();

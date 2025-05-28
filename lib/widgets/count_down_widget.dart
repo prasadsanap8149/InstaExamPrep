@@ -60,16 +60,27 @@ class _CountdownTimerState extends State<CountdownTimer> {
         children: [
           const Text(
             'TIME LEFT',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold,wordSpacing: 10, letterSpacing: 15,),
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              wordSpacing: 10,
+              letterSpacing: 15,
+            ),
           ),
           const SizedBox(height: 10.0),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildTimeCard(hours, 'h'),
-              const Text(':',style: TextStyle(fontSize: 20,fontWeight: FontWeight.w900),),
+              const Text(
+                ':',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+              ),
               _buildTimeCard(minutes, 'm'),
-              const Text(':',style: TextStyle(fontSize: 20,fontWeight: FontWeight.w900),),
+              const Text(
+                ':',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
+              ),
               _buildTimeCard(seconds, 's'),
             ],
           ),
@@ -79,6 +90,53 @@ class _CountdownTimerState extends State<CountdownTimer> {
   }
 
   Widget _buildTimeCard(String time, String unit) {
+    return Container(
+      width: 60,
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 3.0),
+      margin: const EdgeInsets.symmetric(horizontal: 1.0),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.pink.shade400, Colors.deepPurple.shade300],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(10.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            offset: const Offset(2, 2),
+            blurRadius: 4,
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            time,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            unit,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: Colors.white70,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+
+/*Widget _buildTimeCard(String time, String unit) {
     return Column(
       children: [
         Container(
@@ -97,7 +155,9 @@ class _CountdownTimerState extends State<CountdownTimer> {
                   color: Colors.white,
                 ),
               ),
-              const SizedBox(width: 5,),
+              const SizedBox(
+                width: 5,
+              ),
               Text(
                 unit,
                 style: const TextStyle(
@@ -113,25 +173,5 @@ class _CountdownTimerState extends State<CountdownTimer> {
         // Text(unit, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),),
       ],
     );
-  }
-}
-
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title:  const Text('Countdown Timer')),
-        body: const Center(
-          child: CountdownTimer(
-            duration: Duration(days: 0, hours: 5, minutes: 23, seconds: 40),
-          ),
-        ),
-      ),
-    );
-  }
+  }*/
 }

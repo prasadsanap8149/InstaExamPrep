@@ -2,15 +2,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smartexamprep/helper/api_constants.dart';
-import 'package:smartexamprep/helper/app_colors.dart';
 import 'package:smartexamprep/helper/constants.dart';
 import 'package:smartexamprep/helper/local_storage.dart';
 import 'package:smartexamprep/models/user_profile.dart';
 import 'package:smartexamprep/screens/signin.dart';
 import 'package:smartexamprep/services/user_service.dart';
 import 'package:smartexamprep/utils/validator_util.dart';
+import 'package:smartexamprep/widgets/custom_text_form_field.dart';
 
 import '../database/firebase_service.dart';
+import '../helper/app_colors.dart';
 import '../helper/helper_functions.dart';
 import '../models/response.dart';
 import '../widgets/app_bar.dart';
@@ -41,9 +42,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
       TextEditingController();
   final TextEditingController preferredLanguageEditingController =
       TextEditingController();
-
-  final List<String> genders = ['Male', 'Female', 'Other'];
-  String? selectedGender;
+  final TextEditingController genderEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -60,6 +59,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
     mobileTextEditingController.dispose();
     rePasswordTextEditingController.dispose();
     preferredLanguageController.dispose();
+    genderEditingController.dispose();
   }
 
   bool isLoading = false;
@@ -97,13 +97,13 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
             color: Colors.red);
         return;
       }
-      if (selectedTopics.isEmpty) {
-        HelperFunctions.showSnackBarMessage(
-            context: context,
-            message: "Select at least one interest",
-            color: Colors.orange);
-        return;
-      }
+      // if (selectedTopics.isEmpty) {
+      //   HelperFunctions.showSnackBarMessage(
+      //       context: context,
+      //       message: "Select at least one interest",
+      //       color: Colors.orange);
+      //   return;
+      // }
       setState(() {
         isLoading = true;
       });
@@ -117,7 +117,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
           mobile: mobileTextEditingController.text.trim(),
           createdOn: DateTime.timestamp(),
           userRole: Constants.userRoles[0],
-          gender: selectedGender ?? "",
+          gender: genderEditingController.text.trim() ?? "Other",
         );
         Response response = await userService.createNewUser(
             emailTextEditingController.text.trim(),
@@ -170,7 +170,6 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    double heightValue = 10;
     return Scaffold(
       // bottomNavigationBar: const GetBannerAd(),
       resizeToAvoidBottomInset: true,
@@ -182,6 +181,186 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
         systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SafeArea(
+              child: SingleChildScrollView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      const Center(
+                        child: Text(
+                          "Welcome Aboard!",
+                          style: TextStyle(
+                            fontSize: 26,
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.accent,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      buildTextField(
+                        controller: nameTextEditingController,
+                        hintText: "Name",
+                        icon: Icons.person,
+                        validator: (value) => validatorService.validateName(
+                            value: value!, field: 'Name'),
+                      ),
+                      const SizedBox(height: 16),
+                      buildTextField(
+                        controller: emailTextEditingController,
+                        hintText: "Email",
+                        icon: Icons.email,
+                        validator: validatorService.validateEmail,
+                      ),
+                      const SizedBox(height: 16),
+                      buildTextField(
+                        controller: mobileTextEditingController,
+                        hintText: "Mobile",
+                        icon: Icons.call,
+                        keyboardType: TextInputType.phone,
+                        validator: (value) =>
+                            validatorService.validateNumber(value: value!),
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        value: preferredLanguageController.text.isEmpty
+                            ? null
+                            : preferredLanguageController.text,
+                        decoration: InputDecoration(
+                          labelText: 'Language',
+                          prefixIcon: const Icon(Icons.language,color: AppColors.fabIconColor),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        items: ['English', 'Marathi', 'Hindi']
+                            .map((language) => DropdownMenuItem(
+                                  value: language,
+                                  child: Text(language),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          preferredLanguageController.text = value!;
+                        },
+                        validator: (value) => value == null || value.isEmpty
+                            ? "Please select a language."
+                            : null,
+                      ),
+
+                      const SizedBox(height: 16),
+                      buildTextField(
+                        controller: passwordTextEditingController,
+                        hintText: "Password",
+                        icon: Icons.lock,
+                        obscureText: true,
+                        validator: (value) => value!.isEmpty
+                            ? Constants.passwordMessage
+                            : value.length < 6
+                                ? Constants.passwordLengthMessage
+                                : null,
+                      ),
+                      const SizedBox(height: 16),
+                      buildTextField(
+                        controller: rePasswordTextEditingController,
+                        hintText: "Re-Password",
+                        icon: Icons.lock,
+                        obscureText: passwordVisible,
+                        suffixIcon: IconButton(
+                          icon: Icon(passwordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off),
+                          onPressed: () {
+                            setState(() {
+                              passwordVisible = !passwordVisible;
+                            });
+                          },
+                        ),
+                        validator: (value) => value!.isEmpty
+                            ? Constants.passwordMessage
+                            : value.length < 6
+                                ? Constants.passwordLengthMessage
+                                : null,
+                      ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        value: genderEditingController.text.isEmpty
+                            ? null
+                            : genderEditingController.text,
+                        decoration: InputDecoration(
+                          labelText: 'Gender',
+                          prefixIcon: const Icon(Icons.person,color: AppColors.fabIconColor),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        items: ['Male', 'Female', 'Other']
+                            .map((gender) => DropdownMenuItem(
+                                  value: gender,
+                                  child: Text(gender),
+                                ))
+                            .toList(),
+                        onChanged: (value) {
+                          genderEditingController.text = value!;
+                        },
+                        validator: (value) => value == null || value.isEmpty
+                            ? "Please select your gender."
+                            : null,
+                      ),
+
+                      //_buildGenderSelector(),
+                      //_buildInterestSection(),
+                      const SizedBox(height: 24),
+                      ElevatedButton(
+                        onPressed: signUp,
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: const Size.fromHeight(48),
+                          backgroundColor: AppColors.buttonBackground,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          "Sign Up",
+                          style: TextStyle(
+                              fontSize: 16, color: AppColors.buttonText),
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text("Already have an account?",
+                              style: TextStyle(fontSize: 15.5)),
+                          const SizedBox(width: 6),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (_) => const SignIn()),
+                              );
+                            },
+                            child: Text(
+                              "Sign In",
+                              style: TextStyle(
+                                decoration: TextDecoration.underline,
+                                color: Colors.blue.shade900,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+      /*   body: isLoading
           ? const Center(
               child: CircularProgressIndicator(),
             )
@@ -465,7 +644,59 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                   ],
                 ),
               ),
-            ),
+            ),*/
     );
   }
+
+/* Widget _buildGenderSelector() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Select Gender',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        Row(
+          children: genders.map((gender) {
+            return Row(
+              children: [
+                Radio<String>(
+                  value: gender,
+                  groupValue: _selectedGender,
+                  onChanged: (value) {
+                    setState(() => _selectedGender = value!);
+                  },
+                ),
+                Text(gender),
+              ],
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+*/
+/*  Widget _buildInterestSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Select your quiz interest',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 10,
+          children: Constants.topicNames.map((topic) {
+            final isSelected = selectedTopics.contains(topic);
+            return FilterChip(
+              label: Text(topic),
+              selected: isSelected,
+              onSelected: (_) => _toggleInterest(topic),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }*/
 }

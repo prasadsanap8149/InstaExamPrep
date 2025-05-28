@@ -17,13 +17,17 @@ class OfflineScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // Oops Image
-             /* Image.asset(
+              /* Image.asset(
                 'assets/images/oops_offline.png',
                 // Use a placeholder or your custom offline image
                 height: 200,
                 width: 200,
               ),*/
-              const Icon(Icons.signal_wifi_connected_no_internet_4_rounded,color: Colors.red,size: 50.0,),
+              const Icon(
+                Icons.signal_wifi_connected_no_internet_4_rounded,
+                color: Colors.red,
+                size: 50.0,
+              ),
               const SizedBox(height: 20),
               // "Oops! You're Offline" Text
               const Text(

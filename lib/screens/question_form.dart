@@ -6,6 +6,7 @@ import 'package:smartexamprep/helper/app_colors.dart';
 import 'package:smartexamprep/helper/helper_functions.dart';
 import 'package:smartexamprep/models/question.dart';
 import 'package:smartexamprep/models/question_list.dart';
+import 'package:smartexamprep/screens/quiz_room/excel_file_viewer_screen.dart';
 import 'package:smartexamprep/screens/view_question_list.dart';
 
 import '../models/options.dart';
@@ -149,7 +150,11 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
           alignment: Alignment.centerRight,
           child: ElevatedButton.icon(
             onPressed: () => addOption(language),
-            icon: const Icon(Icons.add_circle, size: 18,color: AppColors.fabIconColor,),
+            icon: const Icon(
+              Icons.add_circle,
+              size: 18,
+              color: AppColors.fabIconColor,
+            ),
             label: const Text(
               'Add Option',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -373,7 +378,7 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Questions'),
+        title: const Text('Questions'),
         centerTitle: true,
         backgroundColor: AppColors.appBarBackground,
         foregroundColor: AppColors.accent,
@@ -413,54 +418,71 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
               const SizedBox(height: 16),
               buildLocalizedForms(),
               const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  ElevatedButton.icon(
-                    onPressed: saveLocalizedQuestions,
-                    icon: const Icon(Icons.add, size: 18,color: AppColors.fabIconColor,),
-                    label: const Text(
-                      'Add Question',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: AppColors.buttonText),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 24),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      backgroundColor: AppColors.buttonBackground,
-                      elevation: 4,
-                    ),
+              ElevatedButton.icon(
+                onPressed: saveLocalizedQuestions,
+                icon: const Icon(
+                  Icons.add,
+                  size: 18,
+                  color: AppColors.fabIconColor,
+                ),
+                label: const Text(
+                  'Add Question',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.buttonText),
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 12, horizontal: 24),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
-                  ElevatedButton.icon(
-                    onPressed: viewQuestions,
-                    icon: const Icon(Icons.visibility, size: 18,color: AppColors.fabIconColor,),
-                    label: const Text(
-                      'View Questions',
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: AppColors.buttonText,),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12, horizontal: 24),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                      backgroundColor: AppColors.buttonBackground,
-                      elevation: 4,
-                    ),
-                  ),
-                ],
+                  backgroundColor: AppColors.buttonBackground,
+                  elevation: 4,
+                ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 5),
+              ElevatedButton.icon(
+                onPressed: viewQuestions,
+                icon: const Icon(
+                  Icons.visibility,
+                  size: 18,
+                  color: AppColors.fabIconColor,
+                ),
+                label: const Text(
+                  'View Questions',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.buttonText,
+                  ),
+                ),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 12, horizontal: 24),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  backgroundColor: AppColors.buttonBackground,
+                  elevation: 4,
+                ),
+              ),
+              const SizedBox(height: 5),
               ElevatedButton.icon(
                 onPressed: saveQuestion,
-                icon: const Icon(Icons.save, size: 18,color: AppColors.fabIconColor,),
+                icon: const Icon(
+                  Icons.save,
+                  size: 18,
+                  color: AppColors.fabIconColor,
+                ),
                 label: const Text(
                   'Save Questions',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold,color: AppColors.buttonText,),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.buttonText,
+                  ),
                 ),
                 style: ElevatedButton.styleFrom(
                   padding:
@@ -474,6 +496,28 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
               ),
             ],
           ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        tooltip: "Upload Question.",
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ExcelQuestionViewer(
+                userId: widget.userId,
+                quizId: widget.quizId,
+              ),
+            ),
+          );
+        },
+        backgroundColor:
+        AppColors.fabBackground, // custom background color
+        foregroundColor:
+        AppColors.fabIconColor, // custom icon color if needed
+        child: const Icon(
+          Icons.upload,
+          color: AppColors.appBarIcon,
         ),
       ),
     );

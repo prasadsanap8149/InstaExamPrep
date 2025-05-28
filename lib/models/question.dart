@@ -39,8 +39,8 @@ class Questions {
       type: map['type'],
       questionsList: map['questionsList'] != null
           ? (map['questionsList'] as List)
-          .map((item) => QuestionsList.fromMap(item))
-          .toList()
+              .map((item) => QuestionsList.fromMap(item))
+              .toList()
           : null,
     );
   }

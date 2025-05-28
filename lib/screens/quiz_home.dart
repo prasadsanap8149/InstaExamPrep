@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smartexamprep/helper/app_colors.dart';
+import 'package:smartexamprep/helper/helper_functions.dart';
 import 'package:smartexamprep/models/quiz.dart';
 import 'package:smartexamprep/models/user_profile.dart';
 
@@ -28,7 +29,9 @@ class _QuizHomeState extends State<QuizHome> {
   @override
   void initState() {
     super.initState();
-    setState(() {});
+    setState(() {
+      userType = widget.userProfile.userRole;
+    });
   }
 
   Widget quizList(bool userFlag, String quizInterest) {
@@ -72,14 +75,16 @@ class _QuizHomeState extends State<QuizHome> {
                 itemCount: snapshot.data!.docs.length,
                 itemBuilder: (context, index) {
                   var doc = snapshot.data!.docs[index];
-                  Quiz quizMap = Quiz.fromMap(doc.data() as Map<String,dynamic>);
+                  Quiz quizMap =
+                      Quiz.fromMap(doc.data() as Map<String, dynamic>);
                   debugPrint('Quiz Home User ID:${widget.userProfile.id}');
                   debugPrint('Fetch quiz document :: ${doc.data()}');
                   return QuizTile(
                     imgUrl: Constants.imageUrl,
                     userType: userType,
                     userId: widget.userProfile.id.toString(),
-                    index: index, quizMap: quizMap,
+                    index: index,
+                    quizMap: quizMap,
                   );
                 },
               );
@@ -94,7 +99,7 @@ class _QuizHomeState extends State<QuizHome> {
         title: Text(widget.quizTitle),
         centerTitle: true,
         foregroundColor: AppColors.accent,
-        backgroundColor:AppColors.appBarBackground,
+        backgroundColor: AppColors.appBarBackground,
         elevation: 0.0,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
@@ -106,29 +111,31 @@ class _QuizHomeState extends State<QuizHome> {
                 : true,
             widget.quizTitle),
       ),
-      floatingActionButton: widget.userProfile.userRole == Constants.userRoles[0]
-          ? null
-          : FloatingActionButton(
-        tooltip: "Add new quiz.",
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => CreateQuiz(
-                userId: widget.userProfile.id!,
-                topic: widget.quizTitle,
-              ),
-            ),
-          );
-        },
-        backgroundColor: AppColors.fabBackground, // custom background color
-        foregroundColor: AppColors.fabIconColor, // custom icon color if needed
-        child: const Icon(
-          Icons.add,
-          color: AppColors.appBarIcon,
-        ),
-      ),
-
+      floatingActionButton:
+          widget.userProfile.userRole == Constants.userRoles[0]
+              ? null
+              : FloatingActionButton(
+                  tooltip: "Add new quiz.",
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CreateQuiz(
+                          userId: widget.userProfile.id!,
+                          topic: widget.quizTitle,
+                        ),
+                      ),
+                    );
+                  },
+                  backgroundColor:
+                      AppColors.fabBackground, // custom background color
+                  foregroundColor:
+                      AppColors.fabIconColor, // custom icon color if needed
+                  child: const Icon(
+                    Icons.add,
+                    color: AppColors.appBarIcon,
+                  ),
+                ),
     );
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:random_string/random_string.dart';
 import 'package:smartexamprep/database/firebase_service.dart';
 import 'package:smartexamprep/models/quiz.dart';
@@ -8,8 +7,6 @@ import 'package:smartexamprep/screens/question_form.dart';
 import '../helper/app_colors.dart';
 import '../helper/constants.dart';
 import '../helper/helper_functions.dart';
-import '../widgets/animated_custom_button.dart';
-import '../widgets/custom_button.dart';
 
 class CreateQuiz extends StatefulWidget {
   final String userId;
@@ -46,9 +43,6 @@ class _CreateQuizState extends State<CreateQuiz> {
           context: context,
           message: 'Please select quiz hour or minute',
           color: Colors.red);
-    } else if (quizCategory == null) {
-      HelperFunctions.showSnackBarMessage(
-          context: context, message: "Select category", color: Colors.red);
     } else if (quizType == null) {
       HelperFunctions.showSnackBarMessage(
           context: context, message: "Select type", color: Colors.red);
@@ -64,7 +58,7 @@ class _CreateQuizState extends State<CreateQuiz> {
             id: quizId,
             title: quizTitleController.text.trim(),
             quizDescription: quizDescriptionController.text.trim(),
-            category: quizCategory!.trim(),
+            category: widget.topic.trim(),
             quizType: quizType!.trim(),
             hour: quizHour,
             minute: quizMinute,
@@ -96,317 +90,144 @@ class _CreateQuizState extends State<CreateQuiz> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.topic),
+        foregroundColor: AppColors.accent,
+        backgroundColor: AppColors.appBarBackground,
         centerTitle: true,
-        backgroundColor: Colors.transparent,
-        elevation: 0.0,
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       body: _isLoading
-          ? const Center(
-              child: CircularProgressIndicator(),
-            )
+          ? const Center(child: CircularProgressIndicator())
           : Form(
               key: _createQuizFormKey,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    // Constants.isMobileDevice
-                    //     ? const GetBannerAd()
-                    //     : const Text(""),
-                    Column(
-                      children: [
-                        Text(
-                          "Create ${widget.topic} Quiz",
-                          style: const TextStyle(
-                              fontSize: 30,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
-                        ),
-                        SizedBox(
-                          height: 300,
-                          child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text('Hours',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18)),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Colors.grey, width: 1.0),
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                          ),
-                                          child: DropdownButton<int>(
-                                            hint: const Text(' Hour'),
-                                            underline: const SizedBox(),
-                                            value: quizHour,
-                                            items: hourOptions.map((int hour) {
-                                              return DropdownMenuItem<int>(
-                                                value: hour,
-                                                child: Text(hour.toString()),
-                                              );
-                                            }).toList(),
-                                            onChanged: (int? newValue) {
-                                              setState(() {
-                                                quizHour = newValue!;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          'Minutes',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18),
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Colors.grey, width: 1.0),
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                          ),
-                                          child: DropdownButton<int>(
-                                            hint: const Text('Minutes'),
-                                            underline: const SizedBox(),
-                                            value: quizMinute,
-                                            items:
-                                                minuteOptions.map((int hour) {
-                                              return DropdownMenuItem<int>(
-                                                value: hour,
-                                                child: Text(hour.toString()),
-                                              );
-                                            }).toList(),
-                                            onChanged: (int? newValue) {
-                                              setState(() {
-                                                quizMinute = newValue!;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text('Category',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18)),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Colors.grey, width: 1.0),
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                          ),
-                                          child: DropdownButton<String>(
-                                            hint: const Text('Category'),
-                                            value: widget.topic,
-                                            underline: const SizedBox(),
-                                            // Removes default underline
-                                            items: Constants.topicNames
-                                                .map((String topic) {
-                                              return DropdownMenuItem<String>(
-                                                value: topic,
-                                                child: Text(topic.toString()),
-                                              );
-                                            }).toList(),
-                                            onChanged: (String? newValue) {
-                                              setState(() {
-                                                quizCategory = newValue!;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        const Text(
-                                          'Type',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18),
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          decoration: BoxDecoration(
-                                            border: Border.all(
-                                                color: Colors.grey, width: 1.0),
-                                            borderRadius:
-                                                BorderRadius.circular(8.0),
-                                          ),
-                                          child: DropdownButton<String>(
-                                            hint: const Text('Type'),
-                                            underline: const SizedBox(),
-                                            value: quizType,
-                                            items: Constants.quizType
-                                                .map((String topic) {
-                                              return DropdownMenuItem<String>(
-                                                value: topic,
-                                                child: Text(topic.toString()),
-                                              );
-                                            }).toList(),
-                                            onChanged: (String? newValue) {
-                                              setState(() {
-                                                quizType = newValue!;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ],
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                const Text("Quiz Title",
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18)),
-                                TextFormField(
-                                  controller: quizTitleController,
-                                  keyboardType: TextInputType.visiblePassword,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Title',
-                                    hintText: 'Enter quiz title.',
-                                    border: OutlineInputBorder(),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.blue, width: 2.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.grey, width: 1.0),
-                                    ),
-                                    errorBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.red, width: 1.0),
-                                    ),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.red, width: 2.0),
-                                    ),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'This field cannot be empty';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                const Text(
-                                  "Quiz Description",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18),
-                                ),
-                                TextFormField(
-                                  controller: quizDescriptionController,
-                                  maxLines: 5,
-                                  // Adjust as needed
-                                  minLines: 3,
-                                  // Minimum height of the text area
-                                  decoration: const InputDecoration(
-                                    labelText: 'Description',
-                                    hintText: 'Enter quiz description.',
-                                    border: OutlineInputBorder(),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.blue, width: 2.0),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.grey, width: 1.0),
-                                    ),
-                                    errorBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.red, width: 1.0),
-                                    ),
-                                    focusedErrorBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                          color: Colors.red, width: 2.0),
-                                    ),
-                                  ),
-                                  validator: (value) {
-                                    if (value == null || value.isEmpty) {
-                                      return 'Description cannot be empty';
-                                    }
-                                    return null;
-                                  },
-                                ),
-                              ],
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Center(
+                        child: Text("Create ${widget.topic} Quiz",
+                            style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87)),
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Duration Row
+                      Row(
+                        children: [
+                          Expanded(
+                            child: DropdownButtonFormField<int>(
+                              value: quizHour,
+                              decoration: const InputDecoration(
+                                labelText: "Hour",
+                                border: OutlineInputBorder(),
+                              ),
+                              items: hourOptions
+                                  .map((e) => DropdownMenuItem(
+                                      value: e, child: Text("$e")))
+                                  .toList(),
+                              onChanged: (val) =>
+                                  setState(() => quizHour = val!),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        AnimatedCustomButton(
-                          btnLabel: "Submit",
-                          btnColor: AppColors.accent,
-                          onTap: submitQuizForm,
-                          btnWidth: MediaQuery.of(context).size.width * 0.4,
-                        ),
-                        AnimatedCustomButton(
-                          btnLabel: "Cancel",
-                          btnColor: AppColors.buttonDanger,
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          btnWidth: MediaQuery.of(context).size.width * 0.4,
-                        ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: DropdownButtonFormField<int>(
+                              value: quizMinute,
+                              decoration: const InputDecoration(
+                                labelText: "Minutes",
+                                border: OutlineInputBorder(),
+                              ),
+                              items: minuteOptions
+                                  .map((e) => DropdownMenuItem(
+                                      value: e, child: Text("$e")))
+                                  .toList(),
+                              onChanged: (val) =>
+                                  setState(() => quizMinute = val!),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
 
-                      ],
-                    )
-                  ],
+                      // Category & Type
+
+                      DropdownButtonFormField<String>(
+                        value: quizType,
+                        decoration: const InputDecoration(
+                          labelText: "Type",
+                          border: OutlineInputBorder(),
+                        ),
+                        items: Constants.quizType
+                            .map((e) =>
+                                DropdownMenuItem(value: e, child: Text(e)))
+                            .toList(),
+                        onChanged: (val) => setState(() => quizType = val!),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Quiz Title
+                      TextFormField(
+                        controller: quizTitleController,
+                        decoration: const InputDecoration(
+                          labelText: "Quiz Title",
+                          hintText: "Enter quiz title",
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Title cannot be empty';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Quiz Description
+                      TextFormField(
+                        controller: quizDescriptionController,
+                        maxLines: 4,
+                        decoration: const InputDecoration(
+                          labelText: "Quiz Description",
+                          hintText: "Enter quiz description",
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Submit Button
+                      ElevatedButton.icon(
+                        onPressed: submitQuizForm,
+                        icon: const Icon(Icons.save,
+                            color: AppColors.fabIconColor),
+                        label: const Text(
+                          'Save',
+                          style: TextStyle(color: AppColors.buttonText),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 14),
+                            backgroundColor: AppColors.fabBackground),
+                      ),
+                      const SizedBox(height: 10),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        icon: const Icon(Icons.arrow_back,
+                            color: AppColors.fabIconColor),
+                        label: const Text(
+                          'Back',
+                          style: TextStyle(color: AppColors.buttonText),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 32, vertical: 14),
+                            backgroundColor: AppColors.fabBackground),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

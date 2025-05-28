@@ -3,12 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:smartexamprep/database/firebase_service.dart';
 import 'package:smartexamprep/helper/api_constants.dart';
 import 'package:smartexamprep/models/firebase_response.dart';
-import 'package:smartexamprep/screens/signin.dart';
 
 import '../helper/app_colors.dart';
 import '../helper/helper_functions.dart';
 import '../utils/validator_util.dart';
 import '../widgets/app_bar.dart';
+import '../widgets/custom_text_form_field.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -84,15 +84,20 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              TextFormField(
-                controller: _emailController,
-                keyboardType: TextInputType.emailAddress,
-                style: const TextStyle(color: AppColors.accent),
-                decoration: const InputDecoration(
-                  hintText: "Email",
-                  prefixIcon: Icon(Icons.email, color: AppColors.fabIconColor),
+             const Text(
+                "It Happens! Let’s Reset",
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.accent,
                 ),
-                validator: (value) => validatorService.validateEmail(value),
+              ),
+              const SizedBox(height: 25),
+              buildTextField(
+                controller: _emailController,
+                hintText: "Email",
+                icon: Icons.email,
+                validator: validatorService.validateEmail,
               ),
               const SizedBox(height: 20),
               SizedBox(
@@ -119,7 +124,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         )
                       : const Text(
                           "Reset Password",
-                          style: TextStyle(fontSize: 16,color: AppColors.buttonText,),
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: AppColors.buttonText,
+                          ),
                         ),
                 ),
               ),
@@ -139,7 +147,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   ),
                   child: const Text(
                     "Sign In",
-                    style: TextStyle(fontSize: 16, color:AppColors.buttonText),
+                    style: TextStyle(fontSize: 16, color: AppColors.buttonText),
                   ),
                 ),
               ),
