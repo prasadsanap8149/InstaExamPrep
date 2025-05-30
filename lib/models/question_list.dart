@@ -6,12 +6,14 @@ class QuestionsList {
   List<Options>? options;
   String? explanation;
   String? userId;
+  String? imageUrl;
 
   QuestionsList(
       {this.language,
       this.content,
       this.options,
       this.explanation,
+      this.imageUrl,
       this.userId});
 
   QuestionsList.fromJson(Map<String, dynamic> json) {
@@ -24,6 +26,7 @@ class QuestionsList {
       });
     }
     explanation = json['explanation'];
+    imageUrl = json['imageUrl'];
     userId = json['userId'];
   }
 
@@ -35,6 +38,7 @@ class QuestionsList {
       data['options'] = options!.map((v) => v.toJson()).toList();
     }
     data['explanation'] = explanation;
+    data['imageUrl'] = imageUrl;
     data['userId'] = userId;
     return data;
   }
@@ -50,6 +54,7 @@ class QuestionsList {
               .toList()
           : null,
       explanation: map['explanation'],
+      imageUrl: map['imageUrl'],
       userId: map['userId'],
     );
   }
@@ -61,12 +66,13 @@ class QuestionsList {
       'content': content,
       'options': options?.map((o) => o.toMap()).toList(),
       'explanation': explanation,
+      'imageUrl': imageUrl,
       'userId': userId,
     };
   }
 
   @override
   String toString() {
-    return 'QuestionsList(language: $language, content: $content, options: $options, explanation: $explanation, userId: $userId';
+    return 'QuestionsList(language: $language, content: $content, options: $options, explanation: $explanation, imageUrl: $imageUrl, userId: $userId';
   }
 }

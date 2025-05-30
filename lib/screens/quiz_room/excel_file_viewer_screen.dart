@@ -41,18 +41,34 @@ class _ExcelQuestionViewerState extends State<ExcelQuestionViewer> {
       final sheet = excel.tables[excel.tables.keys.first]!;
       final rows = sheet.rows;
 
+      // Get header map: column name to index
+      final headerRow = rows.first;
+      final headerMap = <String, int>{};
+      for (int i = 0; i < headerRow.length; i++) {
+        final cellValue = headerRow[i]?.value?.toString().trim();
+        if (cellValue != null && cellValue.isNotEmpty) {
+          headerMap[cellValue] = i;
+        }
+      }
+
       List<Map<String, dynamic>> parsedQuestions = [];
 
       for (int i = 1; i < rows.length; i++) {
         final row = rows[i];
-        if (row.length < 21) continue;
 
-        //String srNo = row[0]?.value.toString() ?? '';
+        // Get image link safely using header
+        final imageLink = (() {
+          final imageColIndex = headerMap["IMAGE LINK"];
+          if (imageColIndex != null && imageColIndex < row.length) {
+            return row[imageColIndex]?.value?.toString().trim() ?? '';
+          }
+          return '';
+        })();
 
         Map<String, dynamic> question = {
           "id": randomAlphaNumeric(10),
           "difficultyLevel": 1,
-          "type": "Multiple Choice", // default, may change below
+          "type": "Multiple Choice",
           "questionsList": []
         };
 
@@ -70,11 +86,11 @@ class _ExcelQuestionViewerState extends State<ExcelQuestionViewer> {
               ? row[languageOffset + 2]?.value?.toString() ?? ''
               : '';
           final option3 = row.length > languageOffset + 3
-              ? row[languageOffset + 3]?.value?.toString()
-              : null;
+              ? row[languageOffset + 3]?.value?.toString() ?? ''
+              : '';
           final option4 = row.length > languageOffset + 4
-              ? row[languageOffset + 4]?.value?.toString()
-              : null;
+              ? row[languageOffset + 4]?.value?.toString() ?? ''
+              : '';
           final answerIndex = int.tryParse(row.length > languageOffset + 5
                   ? row[languageOffset + 5]?.value?.toString() ?? '0'
                   : '0') ??
@@ -100,26 +116,31 @@ class _ExcelQuestionViewerState extends State<ExcelQuestionViewer> {
           if (option2.isNotEmpty) {
             options.add({"option": option2, "isCorrect": answerIndex == 2});
           }
-          if (option3 != null && option3.isNotEmpty) {
+          if (option3.isNotEmpty) {
             options.add({"option": option3, "isCorrect": answerIndex == 3});
           }
-          if (option4 != null && option4.isNotEmpty) {
+          if (option4.isNotEmpty) {
             options.add({"option": option4, "isCorrect": answerIndex == 4});
           }
 
-          // Adjust question type based on number of available options
           if (options.length == 2) {
             question["type"] = "True/False | Yes/No";
           }
 
-          question["questionsList"].add({
+          final questionItem = {
             "language": languages[langIndex],
             "content": content,
             "options": options,
             "explanation": explanation,
+            "imageUrl": imageLink,
             "userId": "static-or-dynamic-user-id"
-          });
+          };
 
+          if (imageLink.isNotEmpty) {
+            questionItem["imageUrl"] = imageLink;
+          }
+
+          question["questionsList"].add(questionItem);
           languageOffset += 7;
         }
 
@@ -133,15 +154,9 @@ class _ExcelQuestionViewerState extends State<ExcelQuestionViewer> {
     }
   }
 
-  void saveQuestion1() async {
-    debugPrint('Question List ::${questions.toString()}');
-
-
-  }
-
   void saveQuestion() async {
-    final confirm = await HelperFunctions.showCustomDialog(context, 'Confirm Save',
-        'Are you sure you want to save the question(s)?');
+    final confirm = await HelperFunctions.showCustomDialog(context,
+        'Confirm Save', 'Are you sure you want to save the question(s)?');
     debugPrint('Are you sure you want $confirm');
     if (confirm != true) return;
 
@@ -196,6 +211,7 @@ class _ExcelQuestionViewerState extends State<ExcelQuestionViewer> {
           language: ql['language'],
           content: ql['content'],
           explanation: ql['explanation'],
+          imageUrl: ql['imageUrl'],
           options: options,
           userId: userId,
         );
@@ -399,8 +415,8 @@ class _ExcelQuestionViewerState extends State<ExcelQuestionViewer> {
                                     // Options
                                     ...ql['options'].map<Widget>((opt) {
                                       return Container(
-                                        margin:
-                                            const EdgeInsets.symmetric(vertical: 2),
+                                        margin: const EdgeInsets.symmetric(
+                                            vertical: 2),
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 10, vertical: 6),
                                         decoration: BoxDecoration(
@@ -459,7 +475,29 @@ class _ExcelQuestionViewerState extends State<ExcelQuestionViewer> {
                                           ),
                                         ],
                                       ),
-                                   const SizedBox(height: 12),
+                                    if (ql['imageUrl']
+                                        .toString()
+                                        .trim()
+                                        .isNotEmpty)
+                                      Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          const Icon(Icons.link,
+                                              color: Colors.blue, size: 18),
+                                          const SizedBox(width: 6),
+                                          Expanded(
+                                            child: Text(
+                                              ql['imageUrl'],
+                                              style: TextStyle(
+                                                fontStyle: FontStyle.italic,
+                                                color: Colors.red.shade800,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    const SizedBox(height: 12),
                                   ],
                                 );
                               }).toList(),

@@ -367,7 +367,7 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
           ],
         ),*/
         appBar: AppBar(
-          title: const Text("Exam"),
+          title: const Text('Exam'),
           centerTitle: true,
           backgroundColor: AppColors.appBarBackground,
           foregroundColor: AppColors.accent,
@@ -487,7 +487,7 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
-                          '${currentQuestionIndex + 1}) ${questionContent!.content!}',
+                          '${currentQuestionIndex + 1}) ${questionContent!.content!} ',
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
@@ -496,6 +496,43 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
                         ),
                       ),
 
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            questionContent.imageUrl!,
+                            height: 200,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return const SizedBox(
+                                height: 200,
+                                child:
+                                    Center(child: CircularProgressIndicator()),
+                              );
+                            },
+                            errorBuilder: (context, error, stackTrace) {
+                              return const SizedBox(
+                                height: 200,
+                                child:
+                                    Center(child: Text('Image failed to load')),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: 20),
 
                       // Options
