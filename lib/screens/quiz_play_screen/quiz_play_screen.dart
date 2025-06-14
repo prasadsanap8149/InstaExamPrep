@@ -495,7 +495,7 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
                           ),
                         ),
                       ),
-
+                      questionContent.imageUrl != null?
                       Container(
                         margin: const EdgeInsets.symmetric(vertical: 16),
                         decoration: BoxDecoration(
@@ -532,7 +532,7 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
                             },
                           ),
                         ),
-                      ),
+                      ): const Text(''),
                       const SizedBox(height: 20),
 
                       // Options
