@@ -183,11 +183,17 @@ class FirebaseService {
     return UserProfile.fromMap(docSnapshot.data() as Map<String, dynamic>);
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> getQuizTypeDetailsStream(bool userFlag) {
-    if(userFlag){
-      return firebaseInstance.collection(Constants.quizTypeCollection).snapshots();
+  Stream<QuerySnapshot<Map<String, dynamic>>> getQuizTypeDetailsStream(
+      bool userFlag) {
+    if (userFlag) {
+      return firebaseInstance
+          .collection(Constants.quizTypeCollection)
+          .snapshots();
     }
-    return firebaseInstance.collection(Constants.quizTypeCollection).where('status', isEqualTo: true).snapshots();
+    return firebaseInstance
+        .collection(Constants.quizTypeCollection)
+        .where('status', isEqualTo: true)
+        .snapshots();
   }
 
   Future<void> saveOrUpdateQuizType({
@@ -197,7 +203,8 @@ class FirebaseService {
     required String userId,
   }) async {
     try {
-      final collectionRef = firebaseInstance.collection(Constants.quizTypeCollection);
+      final collectionRef =
+          firebaseInstance.collection(Constants.quizTypeCollection);
 
       if (quizTypeId.isNotEmpty) {
         // Updating existing document
@@ -235,9 +242,6 @@ class FirebaseService {
       debugPrint('Error saving or updating Quiz Type: $e');
     }
   }
-
-
-
 
   Future<void> addQuizData(Map<String, dynamic> quizData, String quizId) async {
     await firebaseInstance
@@ -362,7 +366,7 @@ class FirebaseService {
     }
   }
 
-  deleteQuizTypeRecord(String docId)  async {
+  deleteQuizTypeRecord(String docId) async {
     try {
       // Check if the document exists
       DocumentSnapshot docSnapshot = await firebaseInstance

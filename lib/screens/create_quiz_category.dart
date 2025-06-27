@@ -47,7 +47,8 @@ class _CreateQuizTypeState extends State<CreateQuizType> {
   }
 
   void _deleteQuizType(String docId) async {
-    final confirm = HelperFunctions.showCustomDialog(context, 'Confirm Delete', 'Are you sure to delete');
+    final confirm = HelperFunctions.showCustomDialog(
+        context, 'Confirm Delete', 'Are you sure to delete');
     if (confirm != true) return;
     await firebaseService.deleteQuizTypeRecord(docId);
   }
@@ -135,9 +136,10 @@ class _CreateQuizTypeState extends State<CreateQuizType> {
             const SizedBox(height: 8),
             Expanded(
               child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-                stream: firebaseService.getQuizTypeDetailsStream(widget.userProfile.userRole == Constants.userRoles[0]
-                    ? false
-                    : true),
+                stream: firebaseService.getQuizTypeDetailsStream(
+                    widget.userProfile.userRole == Constants.userRoles[0]
+                        ? false
+                        : true),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return const Center(child: CircularProgressIndicator());

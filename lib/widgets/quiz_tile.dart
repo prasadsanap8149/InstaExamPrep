@@ -31,8 +31,8 @@ class QuizTile extends StatelessWidget {
       ),
       color: AppColors.cardPrimary,
       child: Padding(
-        padding: const EdgeInsets.all(
-            12.0), // Increased padding for better spacing
+        padding:
+            const EdgeInsets.all(12.0), // Increased padding for better spacing
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -120,13 +120,11 @@ class QuizTile extends StatelessWidget {
                                   quizMap.hour > 0
                                       ? Text(
                                           "Time Limit: ${quizMap.hour} Hour ${quizMap.minute} Min",
-                                          style:
-                                              const TextStyle(fontSize: 14),
+                                          style: const TextStyle(fontSize: 14),
                                         )
                                       : Text(
                                           "Time Limit: ${quizMap.minute} Min",
-                                          style:
-                                              const TextStyle(fontSize: 14),
+                                          style: const TextStyle(fontSize: 14),
                                         ),
                                 ],
                               ),
@@ -135,16 +133,13 @@ class QuizTile extends StatelessWidget {
                           actions: [
                             TextButton(
                               onPressed: () {
-                                Navigator.of(context)
-                                    .pop(); // Close the popup
+                                Navigator.of(context).pop(); // Close the popup
                               },
                               style: ButtonStyle(
-                                backgroundColor:
-                                    WidgetStateProperty.all<Color>(
-                                        Colors.redAccent),
-                                foregroundColor:
-                                    WidgetStateProperty.all<Color>(
-                                        Colors.white),
+                                backgroundColor: WidgetStateProperty.all<Color>(
+                                    Colors.redAccent),
+                                foregroundColor: WidgetStateProperty.all<Color>(
+                                    Colors.white),
                                 padding: WidgetStateProperty.all<EdgeInsets>(
                                   const EdgeInsets.symmetric(
                                       horizontal: 20, vertical: 12),
@@ -165,8 +160,8 @@ class QuizTile extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.buttonBackground,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -199,8 +194,8 @@ class QuizTile extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.buttonBackground,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),

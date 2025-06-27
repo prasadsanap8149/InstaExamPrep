@@ -3,6 +3,7 @@ import 'options.dart';
 class QuestionsList {
   String? language;
   String? content;
+  String? passage;
   List<Options>? options;
   String? explanation;
   String? userId;
@@ -11,6 +12,7 @@ class QuestionsList {
   QuestionsList(
       {this.language,
       this.content,
+      this.passage,
       this.options,
       this.explanation,
       this.imageUrl,
@@ -19,6 +21,7 @@ class QuestionsList {
   QuestionsList.fromJson(Map<String, dynamic> json) {
     language = json['language'];
     content = json['content'];
+    passage = json['passage'];
     if (json['options'] != null) {
       options = <Options>[];
       json['options'].forEach((v) {
@@ -34,6 +37,7 @@ class QuestionsList {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['language'] = language;
     data['content'] = content;
+    data['passage'] = passage;
     if (options != null) {
       data['options'] = options!.map((v) => v.toJson()).toList();
     }
@@ -48,6 +52,7 @@ class QuestionsList {
     return QuestionsList(
       language: map['language'],
       content: map['content'],
+      passage: map['passage'],
       options: map['options'] != null
           ? (map['options'] as List)
               .map((item) => Options.fromMap(item))
@@ -64,6 +69,7 @@ class QuestionsList {
     return {
       'language': language,
       'content': content,
+      'passage': passage,
       'options': options?.map((o) => o.toMap()).toList(),
       'explanation': explanation,
       'imageUrl': imageUrl,
@@ -73,6 +79,6 @@ class QuestionsList {
 
   @override
   String toString() {
-    return 'QuestionsList(language: $language, content: $content, options: $options, explanation: $explanation, imageUrl: $imageUrl, userId: $userId';
+    return 'QuestionsList(language: $language, content: $content, passage: $passage, options: $options, explanation: $explanation, imageUrl: $imageUrl, userId: $userId';
   }
 }

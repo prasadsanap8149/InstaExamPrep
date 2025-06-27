@@ -65,6 +65,34 @@ class _ExcelQuestionViewerState extends State<ExcelQuestionViewer> {
           return '';
         })();
 
+        // Get passages safely using header
+        final marathiPassage = (() {
+          final marathiPassageColIndex = headerMap["MARATHI PASSAGE"];
+          if (marathiPassageColIndex != null &&
+              marathiPassageColIndex < row.length) {
+            return row[marathiPassageColIndex]?.value?.toString().trim() ?? '';
+          }
+          return '';
+        })();
+
+        final englishPassage = (() {
+          final englishPassageColIndex = headerMap["ENGLISH PASSAGE"];
+          if (englishPassageColIndex != null &&
+              englishPassageColIndex < row.length) {
+            return row[englishPassageColIndex]?.value?.toString().trim() ?? '';
+          }
+          return '';
+        })();
+
+        final hindiPassage = (() {
+          final hindiPassageColIndex = headerMap["HINDI PASSAGE"];
+          if (hindiPassageColIndex != null &&
+              hindiPassageColIndex < row.length) {
+            return row[hindiPassageColIndex]?.value?.toString().trim() ?? '';
+          }
+          return '';
+        })();
+
         Map<String, dynamic> question = {
           "id": randomAlphaNumeric(10),
           "difficultyLevel": 1,
@@ -130,6 +158,11 @@ class _ExcelQuestionViewerState extends State<ExcelQuestionViewer> {
           final questionItem = {
             "language": languages[langIndex],
             "content": content,
+            "passage": langIndex == 0
+                ? marathiPassage
+                : langIndex == 1
+                    ? englishPassage
+                    : hindiPassage,
             "options": options,
             "explanation": explanation,
             "imageUrl": imageLink,
@@ -440,7 +473,7 @@ class _ExcelQuestionViewerState extends State<ExcelQuestionViewer> {
                                                   : Colors.grey,
                                               size: 18,
                                             ),
-                                            SizedBox(width: 8),
+                                            const SizedBox(width: 8),
                                             Expanded(
                                               child: Text(
                                                 opt['option'],
@@ -451,7 +484,7 @@ class _ExcelQuestionViewerState extends State<ExcelQuestionViewer> {
                                         ),
                                       );
                                     }).toList(),
-                                    SizedBox(height: 6),
+                                    const SizedBox(height: 6),
                                     // Explanation
                                     if (ql['explanation']
                                         .toString()

@@ -27,7 +27,6 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   Set<String> selectedTopics = {};
-  String _selectedGender = 'Male';
   final TextEditingController nameTextEditingController =
       TextEditingController();
   final TextEditingController emailTextEditingController =
@@ -97,13 +96,6 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
             color: Colors.red);
         return;
       }
-      // if (selectedTopics.isEmpty) {
-      //   HelperFunctions.showSnackBarMessage(
-      //       context: context,
-      //       message: "Select at least one interest",
-      //       color: Colors.orange);
-      //   return;
-      // }
       setState(() {
         isLoading = true;
       });
@@ -231,7 +223,8 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                             : preferredLanguageController.text,
                         decoration: InputDecoration(
                           labelText: 'Language',
-                          prefixIcon: const Icon(Icons.language,color: AppColors.fabIconColor),
+                          prefixIcon: const Icon(Icons.language,
+                              color: AppColors.fabIconColor),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
@@ -291,7 +284,8 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
                             : genderEditingController.text,
                         decoration: InputDecoration(
                           labelText: 'Gender',
-                          prefixIcon: const Icon(Icons.person,color: AppColors.fabIconColor),
+                          prefixIcon: const Icon(Icons.person,
+                              color: AppColors.fabIconColor),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),

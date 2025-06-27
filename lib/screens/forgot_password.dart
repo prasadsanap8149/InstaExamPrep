@@ -84,7 +84,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-             const Text(
+              const Text(
                 "It Happens! Let’s Reset",
                 style: TextStyle(
                   fontSize: 26,

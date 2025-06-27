@@ -336,36 +336,6 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
         }
       },
       child: Scaffold(
-        /* appBar: AppBar(
-          title: const Text("Exam"),
-          backgroundColor: AppColors.appBarBackground,
-          foregroundColor: AppColors.accent,
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-              icon: const Icon(
-                Icons.exit_to_app_rounded,
-                color: AppColors.fabIconColor,
-              ),
-              color: AppColors.appBarIcon,
-              tooltip: "Exit",
-              onPressed: () async {
-                final bool shouldExit = await HelperFunctions.showCustomDialog(
-                      context,
-                      "Exit Exam",
-                      "Are you sure you want to exit the exam? Your progress may be lost.",
-                    ) ??
-                    false;
-
-                if (!context.mounted) return;
-                if (shouldExit) {
-                  Navigator.pop(context);
-                }
-              },
-            ),
-          ],
-        ),*/
         appBar: AppBar(
           title: const Text('Exam'),
           centerTitle: true,
@@ -480,10 +450,47 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
                         ),
                       ),
                       const SizedBox(height: 20),
+                      questionContent?.passage != null
+                          ? Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Colors.red[50],
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                    color:
+                                        Colors.grey.shade400), // subtle border
+                              ),
+                              height: 350, // fixed height for scrollable area
+                              child: Scrollbar(
+                                thumbVisibility:
+                                    true, // always show scrollbar thumb
+                                thickness: 4,
+                                radius: const Radius.circular(8),
+                                child: SingleChildScrollView(
+                                  child: Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Text(
+                                      questionContent!.passage!,
+                                      textAlign: TextAlign.left,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w400,
+                                        height: 1.5,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+
+                      const SizedBox(
+                        height: 5,
+                      ),
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.blueGrey[50],
+                          color: Colors.white54,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Text(
@@ -495,44 +502,49 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
                           ),
                         ),
                       ),
-                      questionContent.imageUrl != null?
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 16),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
-                            ),
-                          ],
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.network(
-                            questionContent.imageUrl!,
-                            height: 200,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return const SizedBox(
-                                height: 200,
-                                child:
-                                    Center(child: CircularProgressIndicator()),
-                              );
-                            },
-                            errorBuilder: (context, error, stackTrace) {
-                              return const SizedBox(
-                                height: 200,
-                                child:
-                                    Center(child: Text('Image failed to load')),
-                              );
-                            },
-                          ),
-                        ),
-                      ): const Text(''),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      questionContent.imageUrl != null
+                          ? Container(
+                              margin: const EdgeInsets.symmetric(vertical: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.2),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ],
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.network(
+                                  questionContent.imageUrl!,
+                                  height: 200,
+                                  fit: BoxFit.cover,
+                                  loadingBuilder:
+                                      (context, child, loadingProgress) {
+                                    if (loadingProgress == null) return child;
+                                    return const SizedBox(
+                                      height: 200,
+                                      child: Center(
+                                          child: CircularProgressIndicator()),
+                                    );
+                                  },
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const SizedBox(
+                                      height: 200,
+                                      child: Center(
+                                          child: Text('Image failed to load')),
+                                    );
+                                  },
+                                ),
+                              ),
+                            )
+                          : const Text(''),
                       const SizedBox(height: 20),
 
                       // Options

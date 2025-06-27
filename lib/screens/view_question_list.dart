@@ -52,7 +52,7 @@ class _ViewQuestionListState extends State<ViewQuestionList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar:AppBar(
+      appBar: AppBar(
         title: const Text("Questions List"),
         centerTitle: true,
         backgroundColor: AppColors.appBarBackground,
@@ -65,187 +65,196 @@ class _ViewQuestionListState extends State<ViewQuestionList> {
               child: Text('No Question Added Yet'),
             )
           : ListView.builder(
-        itemCount: widget.questionList.length,
-        itemBuilder: (context, index) {
-          final question = widget.questionList[index];
+              itemCount: widget.questionList.length,
+              itemBuilder: (context, index) {
+                final question = widget.questionList[index];
 
-          return Card(
-            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            elevation: 5,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Question Metadata
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'ID: ${question.id}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      Chip(
-                        label: Text(
-                          question.type!,
-                          style: const TextStyle(color: Colors.white),
-                        ),
-                        backgroundColor: question.type == 'Multiple Choice'
-                            ? Colors.blueAccent
-                            : Colors.green,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      const Icon(Icons.star, color: AppColors.fabIconColor, size: 20),
-                      const SizedBox(width: 4),
-                      Text(
-                        'Difficulty: ${question.difficultyLevel}',
-                        style: const TextStyle(fontSize: 14),
-                      ),
-                    ],
-                  ),
-                  const Divider(thickness: 1, height: 24),
-
-                  // Questions List
-                  ...?question.questionsList?.map((ql) {
-                    return Column(
+                return Card(
+                  margin:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  elevation: 5,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Wrap(
-                          spacing: 8.0,
-                          runSpacing: 4.0,
+                        // Question Metadata
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
+                            Expanded(
+                              child: Text(
+                                'ID: ${question.id}',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                             Chip(
                               label: Text(
-                                'Lang: ${ql.language}',
-                                style: const TextStyle(fontSize: 12),
+                                question.type!,
+                                style: const TextStyle(color: Colors.white),
                               ),
-                              backgroundColor: Colors.grey.shade200,
+                              backgroundColor:
+                                  question.type == 'Multiple Choice'
+                                      ? Colors.blueAccent
+                                      : Colors.green,
                             ),
                           ],
                         ),
-                        const SizedBox(height: 6),
-                        Text(
-                          ql.content!,
-                          style: const TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        const Text(
-                          'Options:',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        ...ql.options!.map((option) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 2.0),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  option.isCorrect
-                                      ? Icons.check_circle_outline
-                                      : Icons.cancel_outlined,
-                                  color: option.isCorrect ? Colors.green : Colors.red,
-                                  size: 18,
-                                ),
-                                const SizedBox(width: 6),
-                                Flexible(
-                                  child: Text(
-                                    option.option,
-                                    style: const TextStyle(fontSize: 14),
-                                  ),
-                                ),
-                              ],
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            const Icon(Icons.star,
+                                color: AppColors.fabIconColor, size: 20),
+                            const SizedBox(width: 4),
+                            Text(
+                              'Difficulty: ${question.difficultyLevel}',
+                              style: const TextStyle(fontSize: 14),
                             ),
+                          ],
+                        ),
+                        const Divider(thickness: 1, height: 24),
+
+                        // Questions List
+                        ...?question.questionsList?.map((ql) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Wrap(
+                                spacing: 8.0,
+                                runSpacing: 4.0,
+                                children: [
+                                  Chip(
+                                    label: Text(
+                                      'Lang: ${ql.language}',
+                                      style: const TextStyle(fontSize: 12),
+                                    ),
+                                    backgroundColor: Colors.grey.shade200,
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                ql.content!,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 10),
+                              const Text(
+                                'Options:',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              ...ql.options!.map((option) {
+                                return Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 2.0),
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        option.isCorrect
+                                            ? Icons.check_circle_outline
+                                            : Icons.cancel_outlined,
+                                        color: option.isCorrect
+                                            ? Colors.green
+                                            : Colors.red,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Flexible(
+                                        child: Text(
+                                          option.option,
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                              const SizedBox(height: 6),
+                              Text(
+                                'Explanation: ${ql.explanation}',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontStyle: FontStyle.italic,
+                                  color: Colors.black54,
+                                ),
+                              ),
+                              const Divider(
+                                  thickness: 1, color: Colors.grey, height: 24),
+                            ],
                           );
                         }).toList(),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Explanation: ${ql.explanation}',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.black54,
-                          ),
-                        ),
-                        const Divider(thickness: 1, color: Colors.grey, height: 24),
-                      ],
-                    );
-                  }).toList(),
 
-                  // Action Buttons
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Wrap(
-                      spacing: 10,
-                      children: [
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            HelperFunctions.showSnackBarMessage(
-                              context: context,
-                              message:
-                              'This option not enabled yet. Please delete existing and save again',
-                              color: Colors.orangeAccent,
-                            );
-                          },
-                          icon: const Icon(
-                            Icons.edit,
-                            color: Colors.white,
-                            size: 18,
+                        // Action Buttons
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: Wrap(
+                            spacing: 10,
+                            children: [
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  HelperFunctions.showSnackBarMessage(
+                                    context: context,
+                                    message:
+                                        'This option not enabled yet. Please delete existing and save again',
+                                    color: Colors.orangeAccent,
+                                  );
+                                },
+                                icon: const Icon(
+                                  Icons.edit,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                                label: const Text('Update'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12),
+                                ),
+                              ),
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  deleteQuestion(question.id!);
+                                },
+                                icon: const Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                                label: const Text('Delete'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.redAccent,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12),
+                                ),
+                              ),
+                            ],
                           ),
-                          label: const Text('Update'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                          ),
-                        ),
-                        ElevatedButton.icon(
-                          onPressed: () {
-                            deleteQuestion(question.id!);
-                          },
-                          icon: const Icon(
-                            Icons.delete,
-                            color: Colors.white,
-                            size: 18,
-                          ),
-                          label: const Text('Delete'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.redAccent,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 12),
-                          ),
-                        ),
+                        )
                       ],
                     ),
-                  )
-                ],
-              ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      )
-      ,
     );
   }
 }

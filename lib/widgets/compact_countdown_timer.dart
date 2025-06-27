@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 class CompactCountdownTimer extends StatefulWidget {
@@ -41,8 +42,10 @@ class _CompactCountdownTimerState extends State<CompactCountdownTimer> {
 
   String get _formattedTime {
     final hours = _remainingTime.inHours.toString().padLeft(2, '0');
-    final minutes = _remainingTime.inMinutes.remainder(60).toString().padLeft(2, '0');
-    final seconds = _remainingTime.inSeconds.remainder(60).toString().padLeft(2, '0');
+    final minutes =
+        _remainingTime.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final seconds =
+        _remainingTime.inSeconds.remainder(60).toString().padLeft(2, '0');
     return "$hours:$minutes:$seconds";
   }
 

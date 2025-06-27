@@ -129,9 +129,10 @@ class _HomeScreenState extends State<HomeScreen> {
           onRefresh: _refreshTopics,
           // You can still define a refresh action (like clearing a local cache)
           child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: firebaseService.getQuizTypeDetailsStream(widget.userProfile.userRole == Constants.userRoles[0]
-                ? false
-                : true),
+            stream: firebaseService.getQuizTypeDetailsStream(
+                widget.userProfile.userRole == Constants.userRoles[0]
+                    ? false
+                    : true),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());

@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smartexamprep/helper/app_colors.dart';
-import 'package:smartexamprep/helper/helper_functions.dart';
 import 'package:smartexamprep/models/quiz.dart';
 import 'package:smartexamprep/models/user_profile.dart';
 
@@ -127,10 +126,10 @@ class _QuizHomeState extends State<QuizHome> {
                       ),
                     );
                   },
-                  backgroundColor:
-                      AppColors.fabBackground, // custom background color
-                  foregroundColor:
-                      AppColors.fabIconColor, // custom icon color if needed
+                  backgroundColor: AppColors.fabBackground,
+                  // custom background color
+                  foregroundColor: AppColors.fabIconColor,
+                  // custom icon color if needed
                   child: const Icon(
                     Icons.add,
                     color: AppColors.appBarIcon,

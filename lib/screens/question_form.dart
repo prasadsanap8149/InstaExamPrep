@@ -433,8 +433,8 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
                       color: AppColors.buttonText),
                 ),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 12, horizontal: 24),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -459,8 +459,8 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 12, horizontal: 24),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
@@ -511,10 +511,10 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
             ),
           );
         },
-        backgroundColor:
-        AppColors.fabBackground, // custom background color
-        foregroundColor:
-        AppColors.fabIconColor, // custom icon color if needed
+        backgroundColor: AppColors.fabBackground,
+        // custom background color
+        foregroundColor: AppColors.fabIconColor,
+        // custom icon color if needed
         child: const Icon(
           Icons.upload,
           color: AppColors.appBarIcon,

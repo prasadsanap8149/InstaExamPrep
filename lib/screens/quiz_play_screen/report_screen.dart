@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../helper/app_colors.dart';
-import '../../helper/helper_functions.dart';
 import '../../models/quiz_answer_list.dart';
 
 class ReportScreen extends StatefulWidget {
