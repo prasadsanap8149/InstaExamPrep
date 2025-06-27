@@ -76,7 +76,7 @@ class _SignUpState extends State<SignUp> with SingleTickerProviderStateMixin {
   }
 
   signUp() async {
-    //Validate the form current state
+    //Validate the form
     if (_formKey.currentState!.validate()) {
       if (passwordTextEditingController.text
               .compareTo(rePasswordTextEditingController.text) <
