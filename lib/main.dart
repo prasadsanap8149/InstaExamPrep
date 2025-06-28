@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:smartexamprep/helper/firebase_option_keys.dart';
 import 'package:smartexamprep/helper/local_storage.dart';
 import 'package:smartexamprep/models/user_profile.dart';
@@ -17,6 +18,27 @@ import 'database/firebase_service.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  const String environment = String.fromEnvironment(
+    'ENVIRONMENT',
+    defaultValue: 'dev',
+  );
+  String envFileName;
+  switch (environment) {
+    case 'prod':
+      envFileName = '.env.prod';
+      break;
+    case 'dev':
+    default:
+      envFileName = '.env.dev';
+      break;
+  }
+
+  try {
+    await dotenv.load(fileName: envFileName);
+    debugPrint('Successfully loaded $envFileName');
+  } catch (e) {
+    debugPrint('Could not load $envFileName: $e');
+  }
   try {
     if (kIsWeb) {
       if (kDebugMode) {

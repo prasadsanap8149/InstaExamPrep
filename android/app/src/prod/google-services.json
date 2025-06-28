@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "640541862877",
+    "project_id": "smartexamprep-prod",
+    "storage_bucket": "smartexamprep-prod.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:640541862877:android:8cfc6af9f44f9c12f82434",
+        "android_client_info": {
+          "package_name": "com.smartexamprep"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9fHswUuzKTHwrn1uKqdfKsKsrLX9t4zk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
