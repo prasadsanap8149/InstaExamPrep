@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:random_string/random_string.dart';
 import 'package:smartexamprep/database/firebase_service.dart';
 import 'package:smartexamprep/models/quiz.dart';
 import 'package:smartexamprep/screens/question_form.dart';
 
+import '../ad_service/widgets/banner_ad.dart';
 import '../helper/app_colors.dart';
 import '../helper/constants.dart';
 import '../helper/helper_functions.dart';
@@ -104,6 +107,8 @@ class _CreateQuizState extends State<CreateQuiz> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      if (Platform.isAndroid || Platform.isIOS) const GetBannerAd(),
+                      const SizedBox(height: 5,),
                       Center(
                         child: Text("Create ${widget.topic} Quiz",
                             style: const TextStyle(

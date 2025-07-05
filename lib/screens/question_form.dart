@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:random_string/random_string.dart';
@@ -9,6 +11,7 @@ import 'package:smartexamprep/models/question_list.dart';
 import 'package:smartexamprep/screens/quiz_room/excel_file_viewer_screen.dart';
 import 'package:smartexamprep/screens/view_question_list.dart';
 
+import '../ad_service/widgets/banner_ad.dart';
 import '../models/options.dart';
 
 class AddQuestionsDynamic extends StatefulWidget {
@@ -392,6 +395,8 @@ class _AddQuestionsDynamicState extends State<AddQuestionsDynamic> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              if (Platform.isAndroid || Platform.isIOS) const GetBannerAd(),
+              const SizedBox(height: 5,),
               DropdownButtonFormField<String>(
                 value: selectedQuestionType,
                 items: questionTypes.map((type) {

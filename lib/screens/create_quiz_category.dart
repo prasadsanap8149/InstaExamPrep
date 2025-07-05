@@ -1,9 +1,12 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smartexamprep/database/firebase_service.dart';
 import 'package:smartexamprep/helper/helper_functions.dart';
 
+import '../ad_service/widgets/banner_ad.dart';
 import '../helper/app_colors.dart';
 import '../helper/constants.dart';
 import '../models/user_profile.dart';
@@ -73,6 +76,8 @@ class _CreateQuizTypeState extends State<CreateQuizType> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  if (Platform.isAndroid || Platform.isIOS) const GetBannerAd(),
+                  const SizedBox(height: 5,),
                   buildTextField(
                     controller: _titleEditingController,
                     hintText: "Title",

@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:smartexamprep/helper/helper_functions.dart';
 
+import '../ad_service/widgets/banner_ad.dart';
 import '../database/firebase_service.dart';
 import '../helper/app_colors.dart';
 import '../models/question.dart';
@@ -61,9 +64,15 @@ class _ViewQuestionListState extends State<ViewQuestionList> {
         systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       body: widget.questionList.isEmpty
-          ? const Center(
-              child: Text('No Question Added Yet'),
-            )
+          ? Column(
+            children: [
+              if (Platform.isAndroid || Platform.isIOS) const GetBannerAd(),
+              const SizedBox(height: 5,),
+              const Center(
+                  child: Text('No Question Added Yet'),
+                ),
+            ],
+          )
           : ListView.builder(
               itemCount: widget.questionList.length,
               itemBuilder: (context, index) {
@@ -80,6 +89,8 @@ class _ViewQuestionListState extends State<ViewQuestionList> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        if (Platform.isAndroid || Platform.isIOS) const GetBannerAd(),
+                        const SizedBox(height: 5,),
                         // Question Metadata
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -181,7 +192,7 @@ class _ViewQuestionListState extends State<ViewQuestionList> {
                                     ],
                                   ),
                                 );
-                              }).toList(),
+                              }),
                               const SizedBox(height: 6),
                               Text(
                                 'Explanation: ${ql.explanation}',
@@ -195,7 +206,7 @@ class _ViewQuestionListState extends State<ViewQuestionList> {
                                   thickness: 1, color: Colors.grey, height: 24),
                             ],
                           );
-                        }).toList(),
+                        }),
 
                         // Action Buttons
                         Align(

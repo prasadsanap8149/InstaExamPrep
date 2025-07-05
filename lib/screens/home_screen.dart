@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +10,7 @@ import 'package:smartexamprep/screens/profile_screen.dart';
 import 'package:smartexamprep/screens/quiz_home.dart';
 import 'package:smartexamprep/screens/signin.dart';
 
+import '../ad_service/widgets/banner_ad.dart';
 import '../helper/app_colors.dart';
 import '../helper/confirmation_messages.dart';
 import '../helper/constants.dart';
@@ -146,67 +149,75 @@ class _HomeScreenState extends State<HomeScreen> {
                   .map((doc) => doc['title'].toString())
                   .toList();
 
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: GridView.builder(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: orderedTopics.length,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 3 / 2,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
-                    ),
-                    itemBuilder: (context, index) {
-                      final topic = orderedTopics[index];
-                      return Card(
-                        elevation: 4,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        color: AppColors.cardPrimary,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              topic,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.accent,
+              return Column(
+                children: [
+                  if (Platform.isAndroid || Platform.isIOS) const GetBannerAd(),
+                  const SizedBox(height: 5,),
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: GridView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          itemCount: orderedTopics.length,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            childAspectRatio: 3 / 2,
+                            crossAxisSpacing: 16,
+                            mainAxisSpacing: 16,
+                          ),
+                          itemBuilder: (context, index) {
+                            final topic = orderedTopics[index];
+                            return Card(
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                debugPrint("Navigate quiz click: $topic");
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => QuizHome(
-                                      quizTitle: topic,
-                                      userProfile: widget.userProfile,
+                              color: AppColors.cardPrimary,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    topic,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.accent,
                                     ),
                                   ),
-                                );
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      debugPrint("Navigate quiz click: $topic");
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => QuizHome(
+                                            quizTitle: topic,
+                                            userProfile: widget.userProfile,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                    ),
+                                    child: const Text(
+                                      'Open',
+                                      style: TextStyle(color: AppColors.iconPrimary),
+                                    ),
+                                  )
+                                ],
                               ),
-                              child: const Text(
-                                'Open',
-                                style: TextStyle(color: AppColors.iconPrimary),
-                              ),
-                            )
-                          ],
+                            );
+                          },
                         ),
-                      );
-                    },
+                      ),
+                    ),
                   ),
-                ),
+                ],
               );
             },
           ),

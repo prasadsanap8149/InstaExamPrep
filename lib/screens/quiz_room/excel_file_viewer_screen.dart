@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:random_string/random_string.dart';
 import 'package:smartexamprep/models/question.dart';
 
+import '../../ad_service/widgets/banner_ad.dart';
 import '../../database/firebase_service.dart';
 import '../../helper/app_colors.dart';
 import '../../helper/helper_functions.dart';
@@ -272,6 +273,8 @@ class _ExcelQuestionViewerState extends State<ExcelQuestionViewer> {
       ),
       body: Column(
         children: [
+          if (Platform.isAndroid || Platform.isIOS) const GetBannerAd(),
+          const SizedBox(height: 5,),
           questions.isEmpty
               ? const Text('')
               : Padding(
@@ -377,6 +380,8 @@ class _ExcelQuestionViewerState extends State<ExcelQuestionViewer> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              if (Platform.isAndroid || Platform.isIOS) const GetBannerAd(),
+                              const SizedBox(height: 5,),
                               // Header
                               Row(
                                 mainAxisAlignment:
