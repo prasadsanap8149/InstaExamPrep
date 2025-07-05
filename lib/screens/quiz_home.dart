@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -5,6 +7,7 @@ import 'package:smartexamprep/helper/app_colors.dart';
 import 'package:smartexamprep/models/quiz.dart';
 import 'package:smartexamprep/models/user_profile.dart';
 
+import '../ad_service/widgets/banner_ad.dart';
 import '../database/firebase_service.dart';
 import '../helper/constants.dart';
 import '../widgets/quiz_tile.dart';
@@ -102,13 +105,22 @@ class _QuizHomeState extends State<QuizHome> {
         elevation: 0.0,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
-      body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: quizList(
-            widget.userProfile.userRole == Constants.userRoles[0]
-                ? false
-                : true,
-            widget.quizTitle),
+      body: Column(
+        children: [
+          if (Platform.isAndroid || Platform.isIOS) const GetBannerAd(),
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: quizList(
+                widget.userProfile.userRole == Constants.userRoles[0]
+                    ? false
+                    : true,
+                widget.quizTitle,
+              ),
+            ),
+          ),
+
+        ],
       ),
       floatingActionButton:
           widget.userProfile.userRole == Constants.userRoles[0]

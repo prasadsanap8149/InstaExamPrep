@@ -32,22 +32,23 @@ dependencies:
     sdk: flutter
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.6
-  firebase_core: ^3.4.0
-  firebase_auth: ^5.1.3 #firebase user credentials storage integration
-  cloud_firestore: ^5.2.0 #firebase cloud storage integration
-  intl: ^0.17.0 #Date Time Format
-  shared_preferences: ^2.2.3 #share data within widgets
-  encrypt: ^5.0.1 #Encryption Decryption
-  connectivity_plus: ^5.0.2 #Check the online offline device status
-  random_string: ^2.0.1 #generate random strings
-  provider: ^6.1.2
-  share_plus: ^7.2.1
-  excel: ^2.1.0
-  file_picker: ^6.1.1
-  path_provider: ^2.1.2
-  flutter_launcher_icons: ^0.13.1 #For icons changes
+  cupertino_icons: ^1.0.8
+  firebase_core: ^3.15.0
+  firebase_auth: ^5.6.1 #firebase user credentials storage integration
+  cloud_firestore: ^5.6.10 #firebase cloud storage integration
+  intl: ^0.20.2 #Date Time Format
+  shared_preferences: ^2.5.3 #share data within widgets
+  encrypt: ^5.0.3 #Encryption Decryption
+  connectivity_plus: ^6.1.4 #Check the online offline device status
+  random_string: ^2.3.1 #generate random strings
+  provider: ^6.1.5
+  share_plus: ^11.0.0
+  excel: ^4.0.6
+  file_picker: ^10.2.0
+  path_provider: ^2.1.5
+  flutter_launcher_icons: ^0.14.4 #For icons changes
   flutter_dotenv: ^5.2.1
+  google_mobile_ads: ^6.0.0
   #lottie: ^2.7.0 # For animation
 
 flutter_icons:
