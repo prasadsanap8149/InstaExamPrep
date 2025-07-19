@@ -14,10 +14,12 @@ class GetBannerAd extends StatefulWidget {
   GetBannerAdState createState() => GetBannerAdState();
 }
 
-class GetBannerAdState extends State<GetBannerAd> {
+class GetBannerAdState extends State<GetBannerAd> 
+    with WidgetsBindingObserver, AutomaticKeepAliveClientMixin {
   var _isMobileAdsInitializeCalled = false;
   BannerAd? _bannerAd;
   bool _isLoaded = false;
+  bool _isDisposed = false;
   Orientation? _currentOrientation;
 
   final String _adUnitId = Platform.isAndroid
@@ -25,34 +27,79 @@ class GetBannerAdState extends State<GetBannerAd> {
       : kReleaseMode? '':'ca-app-pub-3940256099942544/9214589741'; //IOS Ad Unit ID
 
   @override
+  bool get wantKeepAlive => true;
+
+  @override
   void initState() {
     super.initState();
-    consentManager.gatherConsent((consentGatheringError) {
-      if (consentGatheringError != null) {
-        // Consent not obtained in current session.
-        debugPrint(
-            "${consentGatheringError.errorCode}: ${consentGatheringError.message}");
-      }
-      // Attempt to initialize the Mobile Ads SDK.
-      _initializeMobileAdsSDK();
-    });
+    WidgetsBinding.instance.addObserver(this);
+    _initializeAdService();
+  }
 
-    // This sample attempts to load ads using consent obtained in the previous session.
-    _initializeMobileAdsSDK();
+  @override
+  void dispose() {
+    _isDisposed = true;
+    WidgetsBinding.instance.removeObserver(this);
+    _bannerAd?.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    
+    switch (state) {
+      case AppLifecycleState.paused:
+      case AppLifecycleState.inactive:
+        // Pause ad loading when app goes to background
+        break;
+      case AppLifecycleState.resumed:
+        // Resume ad loading when app comes back to foreground
+        if (!_isDisposed && mounted && !_isLoaded) {
+          _loadAd();
+        }
+        break;
+      case AppLifecycleState.detached:
+        _bannerAd?.dispose();
+        break;
+      case AppLifecycleState.hidden:
+        break;
+    }
+  }
+
+  Future<void> _initializeAdService() async {
+    try {
+      consentManager.gatherConsent((consentGatheringError) {
+        if (consentGatheringError != null) {
+          // Consent not obtained in current session.
+          debugPrint(
+              "${consentGatheringError.errorCode}: ${consentGatheringError.message}");
+        }
+        // Attempt to initialize the Mobile Ads SDK.
+        _initializeMobileAdsSDK();
+      });
+
+      // This sample attempts to load ads using consent obtained in the previous session.
+      _initializeMobileAdsSDK();
+    } catch (e) {
+      debugPrint('Error initializing ad service: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+    
     return OrientationBuilder(
       builder: (context, orientation) {
-        if (_currentOrientation != orientation) {
+        if (_currentOrientation != orientation && !_isDisposed) {
           _isLoaded = false;
           _loadAd();
           _currentOrientation = orientation;
         }
         return Stack(
           children: [
-            if (_bannerAd != null && _isLoaded)
+            if (_bannerAd != null && _isLoaded && !_isDisposed)
               Align(
                 alignment: Alignment.topCenter,
                 child: SafeArea(
@@ -135,11 +182,5 @@ class GetBannerAdState extends State<GetBannerAd> {
       // Load an ad.
       _loadAd();
     }
-  }
-
-  @override
-  void dispose() {
-    _bannerAd?.dispose();
-    super.dispose();
   }
 }
