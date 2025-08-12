@@ -27,67 +27,193 @@ class QuizPlayScreen extends StatefulWidget {
   State<QuizPlayScreen> createState() => _QuizPlayScreenState();
 }
 
-class _QuizPlayScreenState extends State<QuizPlayScreen> {
+class _QuizPlayScreenState extends State<QuizPlayScreen> 
+    with WidgetsBindingObserver, AutomaticKeepAliveClientMixin {
   List<Questions> finalQuestionList = [];
   String selectedLanguage = 'English';
   int currentQuestionIndex = 0;
   Map<String, QuizAnswerList> userAnswers = {};
   bool _timeoutReached = false;
+  bool _isLoading = true;
+  bool _isDisposed = false;
   late int perQuestionDurationInSeconds;
   Timer? questionTimer;
+  Timer? _fetchTimeout;
   int remainingTime = 0;
 
-/*  void fetchQuestion() async {
-    final fetchedQuestions =
-        await firebaseService.fetchQuestions(widget.quizId);
-    setState(() {
-      finalQuestionList = fetchedQuestions;
-      Future.delayed(const Duration(seconds: 10), () {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _initializeQuiz();
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true;
+    WidgetsBinding.instance.removeObserver(this);
+    _cancelTimers();
+    super.dispose();
+  }
+
+  void _cancelTimers() {
+    questionTimer?.cancel();
+    _fetchTimeout?.cancel();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    
+    switch (state) {
+      case AppLifecycleState.paused:
+      case AppLifecycleState.inactive:
+        // Pause timer when app goes to background
+        questionTimer?.cancel();
+        break;
+      case AppLifecycleState.resumed:
+        // Resume timer when app comes back to foreground
+        if (!_isDisposed && mounted && finalQuestionList.isNotEmpty) {
+          startQuestionTimer();
+        }
+        break;
+      case AppLifecycleState.detached:
+        _cancelTimers();
+        break;
+      case AppLifecycleState.hidden:
+        break;
+    }
+  }
+
+  Future<void> _initializeQuiz() async {
+    try {
+      await fetchQuestion();
+    } catch (e) {
+      if (mounted) {
+        HelperFunctions.showSnackBarMessage(
+          context: context,
+          message: 'Failed to load quiz: $e',
+          color: Colors.red,
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> fetchQuestion() async {
+    if (_isDisposed) return;
+    
+    try {
+      // Set timeout for question fetching
+      _fetchTimeout = Timer(const Duration(seconds: 15), () {
         if (mounted && finalQuestionList.isEmpty) {
           setState(() {
             _timeoutReached = true;
+            _isLoading = false;
           });
         }
       });
-    });
-  }*/
-  void fetchQuestion() async {
-    final fetchedQuestions =
-        await firebaseService.fetchQuestions(widget.quizId);
-    if (mounted) {
-      setState(() {
-        finalQuestionList = fetchedQuestions;
-        if (finalQuestionList.isNotEmpty) {
-          perQuestionDurationInSeconds =
-              widget.duration.inSeconds ~/ finalQuestionList.length;
-          startQuestionTimer(); // start first question timer
-        }
 
-        Future.delayed(const Duration(seconds: 10), () {
-          if (mounted && finalQuestionList.isEmpty) {
-            setState(() {
-              _timeoutReached = true;
-            });
+      final fetchedQuestions = await firebaseService.fetchQuestions(widget.quizId);
+      
+      _fetchTimeout?.cancel();
+      
+      if (!_isDisposed && mounted) {
+        setState(() {
+          finalQuestionList = fetchedQuestions;
+          _isLoading = false;
+          
+          if (finalQuestionList.isNotEmpty) {
+            perQuestionDurationInSeconds = 
+                (widget.duration.inSeconds / finalQuestionList.length).round();
+            // Ensure minimum 10 seconds per question
+            perQuestionDurationInSeconds = perQuestionDurationInSeconds < 10 
+                ? 10 : perQuestionDurationInSeconds;
+            startQuestionTimer();
+          } else {
+            _timeoutReached = true;
           }
         });
-      });
+      }
+    } catch (error) {
+      if (!_isDisposed && mounted) {
+        setState(() {
+          _timeoutReached = true;
+          _isLoading = false;
+        });
+        
+        HelperFunctions.showSnackBarMessage(
+          context: context,
+          message: 'Error loading questions: $error',
+          color: Colors.red,
+        );
+      }
     }
   }
 
   void startQuestionTimer() {
+    if (_isDisposed) return;
+    
     questionTimer?.cancel();
     remainingTime = perQuestionDurationInSeconds;
 
     questionTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (_isDisposed || !mounted) {
+        timer.cancel();
+        return;
+      }
+      
       if (remainingTime > 0) {
         setState(() {
           remainingTime--;
         });
       } else {
         timer.cancel();
-        //nextQuestion(); // Automatically move to next question
+        // Auto-move to next question when time expires
+        _handleTimeExpiry();
       }
     });
+  }
+
+  void _handleTimeExpiry() {
+    if (_isDisposed || !mounted) return;
+    
+    // Save empty answer for current question if no answer selected
+    final currentQuestion = finalQuestionList[currentQuestionIndex];
+    final questionContent = _getCurrentQuestionContent();
+    
+    if (questionContent != null && 
+        !userAnswers.containsKey(currentQuestion.id)) {
+      saveAnswer(false, '', questionContent);
+    }
+    
+    // Move to next question or finish quiz
+    if (currentQuestionIndex < finalQuestionList.length - 1) {
+      nextQuestion();
+    } else {
+      submitQuiz();
+    }
+  }
+
+  QuestionsList? _getCurrentQuestionContent() {
+    if (finalQuestionList.isEmpty || 
+        currentQuestionIndex >= finalQuestionList.length) {
+      return null;
+    }
+    
+    final currentQuestion = finalQuestionList[currentQuestionIndex];
+    return currentQuestion.questionsList?.firstWhere(
+      (q) => q.language == selectedLanguage,
+      orElse: () => currentQuestion.questionsList?.first ?? QuestionsList(),
+    );
   }
 
   void selectLanguage(String language) {
@@ -97,6 +223,8 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
   }
 
   void nextQuestion() {
+    if (_isDisposed || !mounted) return;
+    
     if (currentQuestionIndex < finalQuestionList.length - 1) {
       setState(() {
         currentQuestionIndex++;
@@ -111,6 +239,8 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
   }
 
   void previousQuestion() {
+    if (_isDisposed || !mounted) return;
+    
     if (currentQuestionIndex > 0) {
       setState(() {
         currentQuestionIndex--;
@@ -123,46 +253,6 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
           color: Colors.redAccent);
     }
   }
-
-  @override
-  void dispose() {
-    questionTimer?.cancel();
-    super.dispose();
-  }
-
-  /*
-  void nextQuestion() {
-    setState(() {
-      //selectedLanguage = 'English';
-      debugPrint("Question Current Index ::$currentQuestionIndex");
-      debugPrint("Question Current Index ::${finalQuestionList.length}");
-      debugPrint(
-          "Question Current Index ::${currentQuestionIndex < finalQuestionList.length - 1}");
-      if (currentQuestionIndex < finalQuestionList.length - 1) {
-        currentQuestionIndex++;
-      } else {
-        HelperFunctions.showSnackBarMessage(
-            context: context,
-            message: 'This is last question',
-            color: Colors.redAccent);
-      }
-    });
-  }
-  void previousQuestion() {
-    setState(() {
-      debugPrint("Question Current Index ::$currentQuestionIndex");
-      //selectedLanguage = 'English';
-
-      if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
-      } else {
-        HelperFunctions.showSnackBarMessage(
-            context: context,
-            message: 'This is first question',
-            color: Colors.redAccent);
-      }
-    });
-  }*/
 
   void saveAnswer(
       bool isCorrect, String selectedOption, QuestionsList questionContent) {
@@ -193,13 +283,17 @@ class _QuizPlayScreenState extends State<QuizPlayScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    fetchQuestion();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    super.build(context); // Required for AutomaticKeepAliveClientMixin
+    
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+    
     if (finalQuestionList.isEmpty && !_timeoutReached) {
       return Scaffold(
         appBar: AppBar(
