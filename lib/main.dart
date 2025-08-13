@@ -7,6 +7,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
+import 'package:smartexamprep/core/di/dependency_injection.dart';
+import 'package:smartexamprep/core/error/error_handler.dart';
 import 'package:smartexamprep/helper/firebase_option_keys.dart';
 import 'package:smartexamprep/helper/local_storage.dart';
 import 'package:smartexamprep/models/user_profile.dart';
@@ -25,8 +28,20 @@ Future main() async {
   
   // Set up global error handlers
   FlutterError.onError = (FlutterErrorDetails details) {
+    ErrorHandler.logError(
+      details.exception, 
+      stackTrace: details.stack, 
+      context: 'Flutter Error'
+    );
     debugPrint('Flutter Error: ${details.exception}');
     debugPrint('Stack trace: ${details.stack}');
+  };
+
+  // Handle errors outside of Flutter framework
+  PlatformDispatcher.instance.onError = (error, stack) {
+    ErrorHandler.logError(error, stackTrace: stack, context: 'Platform Error');
+    debugPrint('Platform Error: $error');
+    return true;
   };
   
   runApp(const MyApp());
@@ -128,8 +143,15 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _initializeApp() async {
-    await checkConnectivity();
-    await getLoggedInState();
+    try {
+      await checkConnectivity();
+      await getLoggedInState();
+    } catch (e) {
+      ErrorHandler.logError(e, context: '_initializeApp');
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   // Check network connectivity with proper stream handling
@@ -314,6 +336,7 @@ class _MyAppState extends State<MyApp> {
 
     if (!_isOnline) {
       return MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: Scaffold(
           appBar: AppBar(
             title: appBar(context),
@@ -327,19 +350,25 @@ class _MyAppState extends State<MyApp> {
       );
     }
 
-    return MaterialApp(
-      title: '',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.orange),
-        useMaterial3: true,
+    return MultiProvider(
+      providers: DependencyInjection.getProviders(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'InstaExamPrep',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          useMaterial3: true,
+        ),
+        home: _buildHomeScreen(),
       ),
-      home: _isUserLoggedIn
-          ? (userProfile != null
-              ? HomeScreen(userProfile: userProfile!)
-              : const Center(
-                  child: SignUp(),
-                ))
-          : const SignUp(),
     );
+  }
+
+  Widget _buildHomeScreen() {
+    if (_isUserLoggedIn && userProfile != null) {
+      return HomeScreen(userProfile: userProfile!);
+    } else {
+      return const SignUp();
+    }
   }
 }
